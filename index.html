@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mecchaches Counter 🐟</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #fffbe6;
+    --accent1: #FFE234;
+    --accent2: #FF6B2B;
+    --accent3: #FF3D9A;
+    --accent4: #4ECFFF;
+    --dark: #2D2D2D;
+    --white: #ffffff;
+    --card: #ffffff;
+    --shadow: 0 4px 24px rgba(0,0,0,0.10);
+    --radius: 20px;
+    --music-url: '';
+    --bg-image: '';
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--bg);
+    min-height: 100vh;
+    color: var(--dark);
+    transition: background 0.4s;
+  }
+
+  body.has-bg-image {
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    background: var(--dark);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  .nav-logo {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.6rem;
+    color: var(--accent1);
+    letter-spacing: 1px;
+  }
+  .nav-logo span { color: var(--accent3); }
+  nav button {
+    background: var(--accent3);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.2s;
+  }
+  nav button:hover { background: var(--accent2); transform: scale(1.05); }
+
+  /* ===== LAYOUT ===== */
+  .app-wrapper {
+    display: flex;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: 300px;
+    min-width: 260px;
+    background: var(--white);
+    border-right: 3px dashed var(--accent1);
+    padding: 24px 16px;
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+  }
+  .sidebar.open { display: flex; }
+  .sidebar h3 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    color: var(--accent2);
+    border-bottom: 2px solid var(--accent1);
+    padding-bottom: 8px;
+  }
+
+  .sidebar-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent1);
+    color: var(--dark);
+    border: none;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-align: left;
+    width: 100%;
+  }
+  .sidebar-btn:hover { transform: scale(1.03); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .sidebar-btn.pink { background: var(--accent3); color: white; }
+  .sidebar-btn.blue { background: var(--accent4); color: var(--dark); }
+  .sidebar-btn.orange { background: var(--accent2); color: white; }
+
+  .qr-list { display: flex; flex-direction: column; gap: 10px; }
+  .qr-item {
+    background: #f9f9f9;
+    border: 2px solid var(--accent4);
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .qr-item canvas, .qr-item img { border-radius: 8px; }
+  .qr-info { flex: 1; }
+  .qr-info strong { font-size: 0.85rem; display: block; color: var(--dark); }
+  .qr-info span { font-size: 0.75rem; color: #888; }
+  .qr-dl { background: var(--accent4); border: none; border-radius: 10px; padding: 6px 12px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; color: var(--dark); }
+  .qr-dl:hover { background: var(--accent1); }
+
+  /* ===== MAIN CONTENT ===== */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    gap: 32px;
+  }
+
+  /* ===== COUNTER SECTION ===== */
+  .counter-section {
+    background: var(--white);
+    border-radius: 32px;
+    box-shadow: var(--shadow), 0 0 0 4px var(--accent1);
+    padding: 40px 60px;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+    overflow: hidden;
+  }
+  .counter-section::before {
+    content: '🐟';
+    font-size: 3rem;
+    position: absolute;
+    top: 12px; left: 16px;
+    animation: wiggle 2s infinite;
+  }
+  .counter-section::after {
+    content: '🐟';
+    font-size: 3rem;
+    position: absolute;
+    top: 12px; right: 16px;
+    animation: wiggle 2s infinite reverse;
+  }
+  @keyframes wiggle {
+    0%,100% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+  }
+
+  .counter-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    color: var(--accent2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .counter-number {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(5rem, 15vw, 8rem);
+    line-height: 1;
+    color: var(--dark);
+    text-shadow: 4px 4px 0 var(--accent1);
+    transition: transform 0.15s;
+    display: inline-block;
+  }
+  .counter-number.bump { animation: bump 0.35s; }
+  @keyframes bump {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.18) rotate(-3deg); }
+    70% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  .counter-sub {
+    font-size: 1rem;
+    color: #888;
+    margin-top: 8px;
+    font-weight: 600;
+  }
+
+  .admin-counter-btns {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-reset {
+    background: var(--accent2);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .btn-reset:hover { transform: scale(1.05); }
+  .btn-qr {
+    background: var(--accent3);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .btn-qr:hover { transform: scale(1.05); }
+
+  /* ===== BULLETIN BOARD ===== */
+  .bulletin-section {
+    width: 100%;
+    max-width: 700px;
+  }
+  .bulletin-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8rem;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bulletin-board {
+    background: #FFF9D6;
+    border: 3px solid var(--accent1);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 6px 6px 0 var(--accent1);
+    min-height: 120px;
+  }
+  .bulletin-empty {
+    text-align: center;
+    color: #aaa;
+    font-weight: 600;
+    padding: 20px;
+  }
+  .post-item {
+    background: white;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-left: 5px solid var(--accent3);
+    position: relative;
+    box-shadow: 2px 2px 0 #eee;
+    animation: slideIn 0.3s;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .post-item p { font-size: 0.95rem; line-height: 1.5; }
+  .post-item .post-date { font-size: 0.75rem; color: #bbb; margin-top: 6px; }
+  .post-item .del-post {
+    position: absolute;
+    top: 8px; right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+  .post-item .del-post:hover { opacity: 1; }
+
+  .bulletin-add {
+    margin-top: 14px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .bulletin-add.show { display: flex; }
+  .bulletin-add textarea {
+    width: 100%;
+    border: 2px solid var(--accent4);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    resize: vertical;
+    min-height: 70px;
+    outline: none;
+  }
+  .bulletin-add textarea:focus { border-color: var(--accent3); }
+  .btn-post {
+    align-self: flex-end;
+    background: var(--accent3);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 22px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .btn-post:hover { transform: scale(1.05); }
+  .btn-add-post {
+    background: var(--accent4);
+    color: var(--dark);
+    border: none;
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: transform 0.1s;
+    display: none;
+  }
+  .btn-add-post:hover { transform: scale(1.05); }
+
+  /* ===== MODALS ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 28px;
+    padding: 32px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    position: relative;
+    animation: popIn 0.25s;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: var(--dark);
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 18px;
+    background: none; border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--accent2); }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  .form-group input[type="text"],
+  .form-group input[type="password"],
+  .form-group input[type="color"],
+  .form-group input[type="url"],
+  .form-group select {
+    width: 100%;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent3); }
+  .form-group input[type="color"] { height: 46px; cursor: pointer; padding: 4px 8px; }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent3);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 13px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn-primary:hover { background: var(--accent2); transform: scale(1.02); }
+
+  .error-msg {
+    color: var(--accent2);
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* ===== EDITOR MODAL ===== */
+  .editor-modal { max-width: 520px; }
+  .section-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    color: var(--accent4);
+    margin: 16px 0 8px;
+    border-bottom: 2px dashed var(--accent4);
+    padding-bottom: 4px;
+  }
+  .img-preview {
+    width: 100%;
+    max-height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-top: 8px;
+    display: none;
+  }
+
+  /* ===== CONFETTI ===== */
+  .confetti-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 14px;
+    opacity: 0;
+    animation: confettiFall 1.5s ease-in forwards;
+  }
+  @keyframes confettiFall {
+    0% { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+  }
+
+  /* ===== HERO IMAGE ===== */
+  .hero-image-section {
+    width: 100%;
+    max-width: 700px;
+    display: none;
+  }
+  .hero-image-section.show { display: block; }
+  .hero-image-section img {
+    width: 100%;
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    max-height: 300px;
+    object-fit: cover;
+  }
+
+  /* ===== FOUND PAGE ===== */
+  .found-page {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--accent1);
+    z-index: 500;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+  }
+  .found-page.show { display: flex; }
+  .found-page h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2rem, 8vw, 4rem);
+    color: var(--dark);
+    margin-bottom: 16px;
+  }
+  .found-page p {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #555;
+  }
+  .found-fish { font-size: 5rem; animation: wiggle 1s infinite; display: block; margin-bottom: 20px; }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 700px) {
+    .sidebar { position: fixed; left: 0; top: 60px; bottom: 0; z-index: 99; box-shadow: 4px 0 20px rgba(0,0,0,0.15); width: 280px; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 98; top: 60px; }
+    .sidebar-overlay.show { display: block; }
+    .counter-section { padding: 32px 24px; }
+    .main-content { padding: 24px 12px; }
+    .modal { padding: 24px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="nav-logo">Mec<span>cha</span>ches 🐟</div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <button id="menuToggle" style="display:none;" onclick="toggleSidebar()">☰ Panel</button>
+    <button id="loginBtn" onclick="openModal('loginModal')">🔐 Creador</button>
+    <button id="logoutBtn" style="display:none;background:var(--accent2);" onclick="logout()">Cerrar sesión</button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ===== SIDEBAR (admin) ===== -->
+<div class="app-wrapper">
+<aside class="sidebar" id="sidebar">
+  <h3>⚙️ Panel del Creador</h3>
+  <button class="sidebar-btn pink" onclick="openModal('editorModal')">🎨 Editar apariencia</button>
+  <button class="sidebar-btn orange" onclick="openModal('musicModal')">🎵 Poner música</button>
+  <div style="border-top:2px dashed var(--accent4);padding-top:12px;">
+    <h3 style="margin-bottom:10px;">📷 Mis QR Codes</h3>
+    <div class="qr-list" id="qrList">
+      <div style="color:#aaa;font-size:0.85rem;text-align:center;padding:10px;">No hay QR aún</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="main-content">
+
+  <!-- Hero image -->
+  <div class="hero-image-section" id="heroImageSection">
+    <img id="heroImage" src="" alt="Imagen de la página">
+  </div>
+
+  <!-- Counter -->
+  <section class="counter-section">
+    <div class="counter-label">Total de Mecchaches encontrados</div>
+    <span class="counter-number" id="counterNumber">0</span>
+    <div class="counter-sub">¡Cada uno es único! 🎉</div>
+    <div class="admin-counter-btns" id="adminBtns" style="display:none;">
+      <button class="btn-reset" onclick="resetCounter()">🔄 Resetear contador</button>
+      <button class="btn-qr" onclick="generateQR()">📱 Crear nuevo QR</button>
+    </div>
+  </section>
+
+  <!-- Bulletin board -->
+  <section class="bulletin-section">
+    <div class="bulletin-title">📋 Tablón de anuncios</div>
+    <div class="bulletin-board">
+      <div class="bulletin-empty" id="bulletinEmpty">¡No hay anuncios todavía! 🐟</div>
+      <div id="bulletinPosts"></div>
+    </div>
+    <button class="btn-add-post" id="addPostBtn" onclick="toggleAddPost()">+ Añadir anuncio</button>
+    <div class="bulletin-add" id="bulletinAdd">
+      <textarea id="postText" placeholder="Escribe tu anuncio aquí... 📝"></textarea>
+      <button class="btn-post" onclick="addPost()">Publicar 🚀</button>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<!-- ===== FOUND PAGE ===== -->
+<div class="found-page" id="foundPage">
+  <span class="found-fish">🐟</span>
+  <h1 id="foundTitle">¡Has encontrado el Mecchaches número 0!</h1>
+  <p>Redirigiendo a la página principal en unos segundos... 🎊</p>
+</div>
+
+<!-- ===== CONFETTI ===== -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- ===== AUDIO ===== -->
+<audio id="bgMusic" loop></audio>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Login Modal -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2>🔐 Acceso Creador</h2>
+    <div class="form-group">
+      <label>Usuario</label>
+      <input type="text" id="loginUser" placeholder="usuario" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>Contraseña</label>
+      <input type="password" id="loginPass" placeholder="••••••••">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Entrar 🚀</button>
+    <div class="error-msg" id="loginError">❌ Usuario o contraseña incorrectos</div>
+  </div>
+</div>
+
+<!-- Editor Modal -->
+<div class="modal-overlay" id="editorModal">
+  <div class="modal editor-modal" style="max-height:90vh;overflow-y:auto;">
+    <button class="modal-close" onclick="closeModal('editorModal')">✕</button>
+    <h2>🎨 Editar apariencia</h2>
+
+    <div class="section-title">🎨 Colores</div>
+    <div class="form-group">
+      <label>Color de fondo</label>
+      <input type="color" id="bgColor" value="#fffbe6" oninput="livePreviewBg(this.value)">
+    </div>
+    <div class="form-group">
+      <label>Color acento 1 (amarillo)</label>
+      <input type="color" id="accent1Color" value="#FFE234">
+    </div>
+    <div class="form-group">
+      <label>Color acento 2 (naranja)</label>
+      <input type="color" id="accent2Color" value="#FF6B2B">
+    </div>
+    <div class="form-group">
+      <label>Color acento 3 (rosa)</label>
+      <input type="color" id="accent3Color" value="#FF3D9A">
+    </div>
+
+    <div class="section-title">🖼️ Imágenes</div>
+    <div class="form-group">
+      <label>Imagen de fondo (URL o subir)</label>
+      <input type="url" id="bgImageUrl" placeholder="https://..." oninput="previewBgImg()">
+      <input type="file" id="bgImageFile" accept="image/*" style="margin-top:6px;" onchange="loadBgFile(this)">
+    </div>
+    <div class="form-group">
+      <label>Imagen destacada (arriba del contador)</label>
+      <input type="url" id="heroImageUrl" placeholder="https://..." oninput="previewHeroImg()">
+      <input type="file" id="heroImageFile" accept="image/*" style="margin-top:6px;" onchange="loadHeroFile(this)">
+      <img class="img-preview" id="heroPreview">
+    </div>
+
+    <div class="section-title">🐟 Texto personalizado</div>
+    <div class="form-group">
+      <label>Texto del emoji decorativo (nav)</label>
+      <input type="text" id="logoEmoji" placeholder="🐟" value="🐟" maxlength="4">
+    </div>
+    <div class="form-group">
+      <label>Subtítulo del contador</label>
+      <input type="text" id="counterSubText" placeholder="¡Cada uno es único! 🎉" value="¡Cada uno es único! 🎉">
+    </div>
+
+    <button class="btn-primary" style="margin-top:10px;" onclick="applyEditor()">✅ Aplicar cambios</button>
+  </div>
+</div>
+
+<!-- Music Modal -->
+<div class="modal-overlay" id="musicModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('musicModal')">✕</button>
+    <h2>🎵 Música de fondo</h2>
+    <div class="form-group">
+      <label>URL del archivo de audio (mp3, ogg...)</label>
+      <input type="url" id="musicUrl" placeholder="https://ejemplo.com/cancion.mp3">
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="btn-primary" onclick="applyMusic()">▶ Reproducir</button>
+      <button class="btn-primary" style="background:#ccc;color:#333;" onclick="stopMusic()">⏹ Parar</button>
+    </div>
+    <p style="margin-top:12px;font-size:0.8rem;color:#aaa;">Tip: usa un enlace directo a un mp3. Algunos navegadores requieren interacción del usuario para reproducir audio.</p>
+  </div>
+</div>
+
+<!-- Reset Confirm Modal -->
+<div class="modal-overlay" id="resetModal">
+  <div class="modal" style="max-width:360px;text-align:center;">
+    <button class="modal-close" onclick="closeModal('resetModal')">✕</button>
+    <div style="font-size:3rem;margin-bottom:12px;">🔄</div>
+    <h2>¿Resetear el contador?</h2>
+    <p style="margin-bottom:20px;color:#777;">Esto pondrá el contador a 0. Los QR ya generados seguirán siendo válidos.</p>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-primary" style="background:#ccc;color:#333;" onclick="closeModal('resetModal')">Cancelar</button>
+      <button class="btn-primary" onclick="confirmReset()">¡Sí, resetear!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+const ADMIN_USER = 'creador';
+const ADMIN_PASS = 'mecchaches2024'; // Change this!
+
+let state = {
+  counter: 0,
+  loggedIn: false,
+  qrs: [],           // [{id, number, used, url}]
+  posts: [],         // [{id, text, date}]
+  settings: {
+    bgColor: '#fffbe6',
+    accent1: '#FFE234',
+    accent2: '#FF6B2B',
+    accent3: '#FF3D9A',
+    heroImage: '',
+    bgImage: '',
+    logoEmoji: '🐟',
+    counterSub: '¡Cada uno es único! 🎉',
+  }
+};
+
+// ===== PERSISTENCE (localStorage) =====
+function saveState() {
+  localStorage.setItem('mecchaches_state', JSON.stringify(state));
+}
+function loadState() {
+  const raw = localStorage.getItem('mecchaches_state');
+  if (raw) {
+    try {
+      const saved = JSON.parse(raw);
+      state = { ...state, ...saved };
+      state.loggedIn = false; // never persist login
+    } catch(e) {}
+  }
+}
+
+// ===== INIT =====
+function init() {
+  loadState();
+  renderCounter();
+  renderBulletin();
+  applySettings();
+
+  // Check if URL has QR token
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('mec');
+  if (token) handleQRScan(token);
+}
+
+// ===== COUNTER =====
+function renderCounter() {
+  document.getElementById('counterNumber').textContent = state.counter;
+}
+
+function bumpCounter() {
+  state.counter++;
+  saveState();
+  const el = document.getElementById('counterNumber');
+  el.textContent = state.counter;
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+  spawnConfetti();
+  setTimeout(() => el.classList.remove('bump'), 400);
+}
+
+function resetCounter() {
+  openModal('resetModal');
+}
+
+function confirmReset() {
+  state.counter = 0;
+  saveState();
+  renderCounter();
+  closeModal('resetModal');
+}
+
+// ===== QR GENERATION =====
+function generateQR() {
+  const num = state.qrs.length + 1;
+  const id = 'mec_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+  const baseUrl = window.location.origin + window.location.pathname;
+  const url = baseUrl + '?mec=' + id;
+
+  const entry = { id, number: num, used: false, url };
+  state.qrs.push(entry);
+  saveState();
+  renderQRList();
+}
+
+function handleQRScan(token) {
+  // Remove param from URL
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  const entry = state.qrs.find(q => q.id === token);
+  if (!entry) {
+    showFoundPage('¡QR no válido! 🤔', false);
+    return;
+  }
+  if (entry.used) {
+    showFoundPage('¡Este Mecchaches ya fue encontrado! 😅', false);
+    return;
+  }
+  entry.used = true;
+  saveState();
+  bumpCounter();
+  showFoundPage('¡Has encontrado el Mecchaches número ' + entry.number + '!', true);
+}
+
+function showFoundPage(msg, success) {
+  document.getElementById('foundTitle').textContent = (success ? '🎉 ' : '😅 ') + msg;
+  document.getElementById('foundPage').classList.add('show');
+  if (success) spawnConfetti();
+  setTimeout(() => {
+    document.getElementById('foundPage').classList.remove('show');
+  }, 4000);
+}
+
+// ===== QR LIST RENDER =====
+function renderQRList() {
+  const list = document.getElementById('qrList');
+  if (state.qrs.length === 0) {
+    list.innerHTML = '<div style="color:#aaa;font-size:0.85rem;text-align:center;padding:10px;">No hay QR aún</div>';
+    return;
+  }
+  list.innerHTML = '';
+  state.qrs.slice().reverse().forEach(qr => {
+    const item = document.createElement('div');
+    item.className = 'qr-item';
+    item.id = 'qritem_' + qr.id;
+
+    const canvas = document.createElement('div');
+    canvas.id = 'qr_' + qr.id;
+    canvas.style.width = '64px';
+    canvas.style.height = '64px';
+    canvas.style.flexShrink = '0';
+
+    const info = document.createElement('div');
+    info.className = 'qr-info';
+    info.innerHTML = `<strong>Mecchaches #${qr.number}</strong><span>${qr.used ? '✅ Escaneado' : '⏳ Pendiente'}</span>`;
+
+    const dl = document.createElement('button');
+    dl.className = 'qr-dl';
+    dl.textContent = '⬇ Descargar';
+    dl.onclick = () => downloadQR(qr.id);
+
+    item.appendChild(canvas);
+    item.appendChild(info);
+    item.appendChild(dl);
+    list.appendChild(item);
+
+    // Render QR
+    setTimeout(() => {
+      new QRCode(document.getElementById('qr_' + qr.id), {
+        text: qr.url,
+        width: 64,
+        height: 64,
+        colorDark: '#2D2D2D',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }, 50);
+  });
+}
+
+function downloadQR(id) {
+  const container = document.getElementById('qr_' + id);
+  if (!container) return;
+  const img = container.querySelector('img') || container.querySelector('canvas');
+  if (!img) return;
+
+  const link = document.createElement('a');
+  if (img.tagName === 'CANVAS') {
+    link.href = img.toDataURL('image/png');
+  } else {
+    link.href = img.src;
+  }
+  const qr = state.qrs.find(q => q.id === id);
+  link.download = 'mecchaches_' + (qr ? qr.number : id) + '.png';
+  link.click();
+}
+
+// ===== BULLETIN =====
+function renderBulletin() {
+  const posts = document.getElementById('bulletinPosts');
+  const empty = document.getElementById('bulletinEmpty');
+  posts.innerHTML = '';
+  if (state.posts.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  state.posts.slice().reverse().forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'post-item';
+    div.innerHTML = `
+      <p>${escapeHtml(p.text)}</p>
+      <div class="post-date">${p.date}</div>
+      ${state.loggedIn ? `<button class="del-post" onclick="deletePost('${p.id}')">🗑️</button>` : ''}
+    `;
+    posts.appendChild(div);
+  });
+}
+
+function addPost() {
+  const text = document.getElementById('postText').value.trim();
+  if (!text) return;
+  const post = {
+    id: 'post_' + Date.now(),
+    text,
+    date: new Date().toLocaleString('es-ES')
+  };
+  state.posts.push(post);
+  saveState();
+  document.getElementById('postText').value = '';
+  toggleAddPost();
+  renderBulletin();
+}
+
+function deletePost(id) {
+  state.posts = state.posts.filter(p => p.id !== id);
+  saveState();
+  renderBulletin();
+}
+
+function toggleAddPost() {
+  const add = document.getElementById('bulletinAdd');
+  add.classList.toggle('show');
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+// ===== LOGIN =====
+function doLogin() {
+  const u = document.getElementById('loginUser').value;
+  const p = document.getElementById('loginPass').value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    state.loggedIn = true;
+    closeModal('loginModal');
+    showAdminUI();
+    renderQRList();
+    renderBulletin();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function logout() {
+  state.loggedIn = false;
+  hideAdminUI();
+  renderBulletin();
+}
+
+function showAdminUI() {
+  document.getElementById('adminBtns').style.display = 'flex';
+  document.getElementById('addPostBtn').style.display = 'inline-block';
+  document.getElementById('loginBtn').style.display = 'none';
+  document.getElementById('logoutBtn').style.display = 'inline-block';
+  document.getElementById('menuToggle').style.display = 'inline-block';
+  document.getElementById('sidebar').classList.add('open');
+}
+
+function hideAdminUI() {
+  document.getElementById('adminBtns').style.display = 'none';
+  document.getElementById('addPostBtn').style.display = 'none';
+  document.getElementById('loginBtn').style.display = 'inline-block';
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('menuToggle').style.display = 'none';
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('bulletinAdd').classList.remove('show');
+  closeSidebar();
+}
+
+// ===== EDITOR =====
+function livePreviewBg(val) {
+  document.body.style.backgroundColor = val;
+}
+
+function previewBgImg() {
+  const url = document.getElementById('bgImageUrl').value;
+  if (url) {
+    document.body.style.backgroundImage = `url('${url}')`;
+    document.body.classList.add('has-bg-image');
+  }
+}
+
+function loadBgFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    state.settings.bgImage = e.target.result;
+    document.body.style.backgroundImage = `url('${e.target.result}')`;
+    document.body.classList.add('has-bg-image');
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewHeroImg() {
+  const url = document.getElementById('heroImageUrl').value;
+  if (url) {
+    document.getElementById('heroPreview').src = url;
+    document.getElementById('heroPreview').style.display = 'block';
+  }
+}
+
+function loadHeroFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('heroPreview').src = e.target.result;
+    document.getElementById('heroPreview').style.display = 'block';
+    state.settings.heroImage = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyEditor() {
+  const s = state.settings;
+  s.bgColor = document.getElementById('bgColor').value;
+  s.accent1 = document.getElementById('accent1Color').value;
+  s.accent2 = document.getElementById('accent2Color').value;
+  s.accent3 = document.getElementById('accent3Color').value;
+
+  const bgUrl = document.getElementById('bgImageUrl').value || s.bgImage;
+  const heroUrl = document.getElementById('heroImageUrl').value || s.heroImage;
+  s.heroImage = heroUrl;
+  s.bgImage = bgUrl;
+
+  s.logoEmoji = document.getElementById('logoEmoji').value || '🐟';
+  s.counterSub = document.getElementById('counterSubText').value || '¡Cada uno es único! 🎉';
+
+  saveState();
+  applySettings();
+  closeModal('editorModal');
+}
+
+function applySettings() {
+  const s = state.settings;
+  const root = document.documentElement;
+  root.style.setProperty('--bg', s.bgColor);
+  root.style.setProperty('--accent1', s.accent1);
+  root.style.setProperty('--accent2', s.accent2);
+  root.style.setProperty('--accent3', s.accent3);
+  document.body.style.backgroundColor = s.bgColor;
+
+  if (s.bgImage) {
+    document.body.style.backgroundImage = `url('${s.bgImage}')`;
+    document.body.classList.add('has-bg-image');
+  }
+  if (s.heroImage) {
+    document.getElementById('heroImage').src = s.heroImage;
+    document.getElementById('heroImageSection').classList.add('show');
+  }
+  if (s.logoEmoji) {
+    // update fish decorators via CSS content won't work easily, skip nav emoji update for simplicity
+  }
+  document.querySelector('.counter-sub').textContent = s.counterSub;
+
+  // Sync form values
+  document.getElementById('bgColor').value = s.bgColor;
+  document.getElementById('accent1Color').value = s.accent1;
+  document.getElementById('accent2Color').value = s.accent2;
+  document.getElementById('accent3Color').value = s.accent3;
+  document.getElementById('logoEmoji').value = s.logoEmoji;
+  document.getElementById('counterSubText').value = s.counterSub;
+  if (s.heroImage) {
+    document.getElementById('heroImageUrl').value = typeof s.heroImage === 'string' && s.heroImage.startsWith('http') ? s.heroImage : '';
+    document.getElementById('heroPreview').src = s.heroImage;
+    document.getElementById('heroPreview').style.display = 'block';
+  }
+}
+
+// ===== MUSIC =====
+function applyMusic() {
+  const url = document.getElementById('musicUrl').value;
+  if (!url) return;
+  const audio = document.getElementById('bgMusic');
+  audio.src = url;
+  audio.play().catch(() => alert('El navegador bloqueó la reproducción automática. Haz clic en reproducir de nuevo.'));
+  closeModal('musicModal');
+}
+
+function stopMusic() {
+  const audio = document.getElementById('bgMusic');
+  audio.pause();
+  audio.src = '';
+  closeModal('musicModal');
+}
+
+// ===== MODALS =====
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  if (id === 'loginModal') document.getElementById('loginError').style.display = 'none';
+}
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); });
+});
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(el => closeModal(el.id));
+});
+
+// ===== SIDEBAR MOBILE =====
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebarOverlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+// ===== CONFETTI =====
+const CONFETTI_COLORS = ['#FFE234','#FF6B2B','#FF3D9A','#4ECFFF','#7BFF72','#ffffff'];
+function spawnConfetti() {
+  const container = document.getElementById('confettiContainer');
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.top = '-20px';
+    piece.style.background = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.transform = `rotate(${Math.random()*360}deg)`;
+    piece.style.animationDelay = Math.random() * 0.8 + 's';
+    piece.style.animationDuration = (1.2 + Math.random() * 0.8) + 's';
+    container.appendChild(piece);
+    setTimeout(() => piece.remove(), 2500);
+  }
+}
+
+// ===== START =====
+init();
+</script>
+</body>
+</html>
