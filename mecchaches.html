@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎉 Mecchaches!</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--primary:#FFD93D;--orange:#FF6B35;--green:#95E06C;--purple:#C084FC;--dark:#2D1B69;--card:#ffffff;--bg-color:#F0EAFF;--bg-image:none;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background-color:var(--bg-color);background-image:var(--bg-image);background-size:cover;background-attachment:fixed;min-height:100vh;color:var(--dark);transition:background 0.5s;}
+
+/* TOPBAR */
+.topbar{background:var(--dark);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,0.25);}
+.logo{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--primary);}
+.logo span{color:var(--orange);}
+.topbar-right{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+
+/* TABS */
+.tabs{display:flex;gap:0;background:rgba(255,255,255,0.08);border-radius:30px;padding:3px;}
+.tab{font-family:'Nunito',sans-serif;font-weight:700;border:none;background:none;color:rgba(255,255,255,0.6);padding:5px 14px;border-radius:30px;cursor:pointer;font-size:0.8rem;transition:all 0.2s;}
+.tab.active{background:var(--primary);color:var(--dark);}
+
+/* BUTTONS */
+.btn{font-family:'Nunito',sans-serif;font-weight:700;border:none;border-radius:50px;padding:7px 16px;cursor:pointer;font-size:0.85rem;transition:transform 0.15s,box-shadow 0.15s;white-space:nowrap;}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+.btn:active{transform:scale(0.96);}
+.btn-primary{background:var(--primary);color:var(--dark);}
+.btn-danger{background:#ff4757;color:#fff;}
+.btn-green{background:var(--green);color:var(--dark);}
+.btn-purple{background:var(--purple);color:#fff;}
+.btn-orange{background:var(--orange);color:#fff;}
+.btn-dark{background:var(--dark);color:#fff;}
+.btn-gray{background:#e0e0e0;color:#555;}
+.btn-sm{padding:4px 12px;font-size:0.75rem;}
+.btn-xs{padding:3px 8px;font-size:0.7rem;}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+/* LAYOUT */
+.layout{display:flex;min-height:calc(100vh - 52px);}
+
+/* SIDEBAR */
+.sidebar{width:310px;background:var(--dark);color:#fff;padding:16px;overflow-y:auto;display:none;flex-direction:column;gap:14px;flex-shrink:0;}
+.sidebar.open{display:flex;}
+.sidebar h3{font-family:'Fredoka One',cursive;color:var(--primary);font-size:1rem;}
+.sidebar-block{background:rgba(255,255,255,0.07);border-radius:14px;padding:12px;}
+.sidebar-actions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.qr-list{display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 300px);overflow-y:auto;padding-right:2px;}
+.qr-item{background:#fff;border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:8px;position:relative;min-height:78px;}
+.qr-canvas-wrap{width:60px;height:60px;flex-shrink:0;border-radius:8px;overflow:hidden;}
+.qr-canvas-wrap canvas,.qr-canvas-wrap img{width:60px!important;height:60px!important;}
+.qr-info{flex:1;min-width:0;}
+.qr-num{font-family:'Fredoka One',cursive;color:var(--dark);font-size:1.05rem;line-height:1;}
+.qr-status{font-size:0.68rem;color:#666;font-weight:700;margin:2px 0 4px;}
+.qr-btns{display:flex;gap:4px;flex-wrap:wrap;}
+.badge{position:absolute;top:4px;right:4px;font-size:0.58rem;font-weight:800;padding:2px 6px;border-radius:20px;}
+.badge-used{background:#ff4757;color:#fff;}
+.badge-free{background:var(--green);color:var(--dark);}
+
+/* PAGES */
+.page{display:none;width:100%;}
+.page.active{display:flex;flex-direction:column;align-items:center;gap:22px;padding:24px 16px;}
+
+/* COUNTER */
+.counter-card{background:var(--card);border-radius:30px;padding:36px 50px;text-align:center;box-shadow:0 8px 40px rgba(45,27,105,0.12);border:4px solid var(--primary);max-width:480px;width:100%;position:relative;overflow:visible;}
+.counter-label{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.counter-number{font-family:'Fredoka One',cursive;font-size:clamp(5rem,18vw,9rem);color:var(--dark);line-height:1;}
+.counter-number.bounce{animation:bounce 0.5s cubic-bezier(.36,2,.5,1);}
+@keyframes bounce{0%{transform:scale(1)}40%{transform:scale(1.3) rotate(-3deg)}70%{transform:scale(0.95) rotate(2deg)}100%{transform:scale(1) rotate(0)}}
+.counter-sub{font-size:0.9rem;color:#999;margin-top:6px;font-weight:600;}
+.confetti-emoji{font-size:2rem;position:absolute;animation:flyup 1s ease forwards;pointer-events:none;}
+@keyframes flyup{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-80px) scale(0.5)}}
+
+/* ADMIN PANEL */
+.admin-panel{background:var(--card);border-radius:22px;padding:18px 20px;box-shadow:0 4px 20px rgba(0,0,0,0.08);width:100%;max-width:560px;display:none;flex-direction:column;gap:10px;border:2px dashed var(--purple);}
+.admin-panel.visible{display:flex;}
+.admin-panel h3{font-family:'Fredoka One',cursive;color:var(--purple);font-size:1rem;}
+.admin-row{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* BULLETIN */
+.bulletin{background:var(--card);border-radius:22px;padding:20px;width:100%;max-width:560px;box-shadow:0 4px 20px rgba(0,0,0,0.08);border:3px solid var(--orange);}
+.bulletin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.bulletin-header h2{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--orange);}
+.bulletin-posts{display:flex;flex-direction:column;gap:10px;}
+.post{background:#FFF9ED;border-left:5px solid var(--primary);border-radius:10px;padding:10px 14px;position:relative;}
+.post p{font-size:0.9rem;font-weight:600;color:var(--dark);padding-right:24px;}
+.post .post-date{font-size:0.7rem;color:#bbb;margin-top:3px;}
+.post-del{position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;color:#ddd;font-size:0.9rem;display:none;}
+.post-del.show{display:block;}
+.empty-msg{text-align:center;color:#ccc;font-weight:700;padding:18px;font-size:0.9rem;}
+.add-post-area{display:none;gap:8px;margin-top:10px;align-items:flex-start;}
+.add-post-area.open{display:flex;}
+.add-post-area textarea{flex:1;border:2px solid var(--primary);border-radius:10px;padding:8px 12px;font-family:'Nunito',sans-serif;font-size:0.88rem;resize:none;height:68px;outline:none;}
+
+/* IMAGES */
+.images-section{width:100%;max-width:560px;display:none;}
+.images-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.custom-img{width:130px;height:130px;object-fit:cover;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,0.1);border:3px solid var(--primary);}
+
+/* LEADERBOARD */
+.section-card{background:var(--card);border-radius:22px;padding:20px;width:100%;max-width:560px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+.section-title{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.lb-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;margin-bottom:6px;background:#F8F5FF;transition:background 0.2s;}
+.lb-row.me{background:linear-gradient(90deg,#FFD93D22,#C084FC22);border:2px solid var(--purple);}
+.lb-row.top1{background:linear-gradient(90deg,#FFD93D44,#FFD93D11);}
+.lb-row.top2{background:linear-gradient(90deg,#e0e0e044,#e0e0e011);}
+.lb-row.top3{background:linear-gradient(90deg,#FF6B3522,#FF6B3511);}
+.lb-pos{font-family:'Fredoka One',cursive;font-size:1.3rem;width:32px;text-align:center;}
+.lb-avatar{width:36px;height:36px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.lb-name{flex:1;font-weight:800;font-size:0.95rem;}
+.lb-count{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--orange);}
+.lb-count span{font-size:0.7rem;color:#aaa;font-family:'Nunito',sans-serif;font-weight:700;}
+
+/* PROFILE */
+.profile-hero{background:linear-gradient(135deg,var(--dark),#4c1d95);border-radius:22px;padding:24px;width:100%;max-width:560px;color:#fff;text-align:center;}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 10px;}
+.profile-name{font-family:'Fredoka One',cursive;font-size:1.6rem;}
+.profile-stats{display:flex;gap:16px;justify-content:center;margin-top:12px;}
+.profile-stat{text-align:center;}
+.profile-stat .val{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--primary);}
+.profile-stat .lbl{font-size:0.72rem;color:rgba(255,255,255,0.6);font-weight:700;}
+
+/* FOUND QRs */
+.found-list{display:flex;flex-wrap:wrap;gap:8px;}
+.found-chip{background:#F0EAFF;border:2px solid var(--purple);border-radius:30px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:0.9rem;color:var(--dark);}
+
+/* ACHIEVEMENTS */
+.achievements-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+.achievement{background:#F8F5FF;border-radius:16px;padding:14px 10px;text-align:center;border:2px solid transparent;transition:all 0.2s;}
+.achievement.unlocked{border-color:var(--primary);background:linear-gradient(135deg,#FFF9ED,#FFF3C4);}
+.achievement.locked{opacity:0.4;filter:grayscale(1);}
+.ach-icon{font-size:2rem;margin-bottom:6px;}
+.ach-name{font-weight:800;font-size:0.78rem;color:var(--dark);}
+.ach-desc{font-size:0.68rem;color:#888;margin-top:2px;}
+.ach-new{display:inline-block;background:var(--orange);color:#fff;font-size:0.6rem;font-weight:800;padding:1px 6px;border-radius:20px;margin-top:4px;}
+
+/* LOADING */
+#loadingOverlay{position:fixed;inset:0;background:rgba(45,27,105,0.85);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+#loadingOverlay p{color:#fff;font-family:'Fredoka One',cursive;font-size:1.3rem;}
+.spin-emoji{font-size:3rem;animation:spin 1.2s linear infinite;display:inline-block;}
+@keyframes spin{100%{transform:rotate(360deg)}}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(45,27,105,0.55);backdrop-filter:blur(5px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;}
+.overlay.open{display:flex;}
+.modal{background:#fff;border-radius:26px;padding:32px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;}
+.modal h2{font-family:'Fredoka One',cursive;color:var(--dark);font-size:1.5rem;margin-bottom:4px;}
+.modal .sub{color:#999;font-size:0.85rem;margin-bottom:18px;}
+.modal input[type=text],.modal input[type=password]{width:100%;padding:10px 14px;border:2px solid #e0e0e0;border-radius:12px;font-family:'Nunito',sans-serif;font-size:0.95rem;outline:none;margin-bottom:8px;transition:border 0.2s;}
+.modal input:focus{border-color:var(--purple);}
+.error-msg{color:#ff4757;font-size:0.8rem;min-height:18px;margin-bottom:8px;}
+.modal-tabs{display:flex;gap:0;background:#f0f0f0;border-radius:20px;padding:3px;margin-bottom:18px;}
+.modal-tab{flex:1;font-family:'Nunito',sans-serif;font-weight:700;border:none;background:none;color:#888;padding:7px;border-radius:20px;cursor:pointer;font-size:0.85rem;transition:all 0.2s;}
+.modal-tab.active{background:#fff;color:var(--dark);box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+/* ── CANVA EDITOR ── */
+.editor-overlay{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;background:#1a1a2e;}
+.editor-overlay.open{display:flex;}
+.editor-topbar{background:#16213e;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;}
+.editor-topbar h2{font-family:'Fredoka One',cursive;color:#fff;font-size:1.2rem;}
+.editor-body{display:flex;flex:1;overflow:hidden;}
+.editor-sections{width:64px;background:#0f0f23;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;border-right:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
+.esec-btn{width:48px;height:48px;border-radius:12px;border:none;background:none;color:rgba(255,255,255,0.45);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:1.2rem;transition:all 0.2s;padding:0;}
+.esec-btn span{font-size:0.5rem;font-family:'Nunito',sans-serif;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
+.esec-btn:hover{background:rgba(255,255,255,0.08);color:#fff;}
+.esec-btn.active{background:rgba(192,132,252,0.2);color:var(--purple);}
+.editor-controls{width:280px;background:#1a1a2e;overflow-y:auto;padding:16px;border-right:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
+.editor-controls::-webkit-scrollbar{width:4px;}
+.editor-controls::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px;}
+.epanel{display:none;}
+.epanel.active{display:block;}
+.epanel h3{font-family:'Fredoka One',cursive;color:#fff;font-size:1rem;margin-bottom:14px;}
+.elabel{font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;display:block;}
+.erow{margin-bottom:16px;}
+.swatch-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px;}
+.swatch{width:100%;aspect-ratio:1;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:transform 0.15s,border-color 0.15s;}
+.swatch:hover{transform:scale(1.1);}
+.swatch.selected{border-color:#fff;transform:scale(1.1);}
+.grad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.grad-swatch{height:40px;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:transform 0.15s,border-color 0.15s;}
+.grad-swatch:hover{transform:scale(1.03);}
+.grad-swatch.selected{border-color:#fff;}
+.pattern-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.pattern-swatch{height:50px;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;overflow:hidden;}
+.pattern-swatch:hover{transform:scale(1.03);}
+.pattern-swatch.selected{border-color:#fff;}
+.einput{width:100%;padding:9px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.88rem;color:#fff;outline:none;transition:border 0.2s;}
+.einput::placeholder{color:rgba(255,255,255,0.3);}
+.einput:focus{border-color:var(--purple);}
+.einput-color{width:44px;height:44px;border:2px solid rgba(255,255,255,0.15);border-radius:10px;background:none;cursor:pointer;padding:2px;}
+.font-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+.font-card{padding:10px 8px;border-radius:10px;background:rgba(255,255,255,0.05);border:2px solid transparent;cursor:pointer;text-align:center;color:#fff;font-size:0.9rem;transition:all 0.2s;}
+.font-card:hover{background:rgba(255,255,255,0.1);}
+.font-card.selected{border-color:var(--purple);background:rgba(192,132,252,0.15);}
+.eslider{width:100%;accent-color:var(--purple);cursor:pointer;}
+.upload-zone{border:2px dashed rgba(255,255,255,0.2);border-radius:14px;padding:20px;text-align:center;cursor:pointer;color:rgba(255,255,255,0.5);font-size:0.85rem;transition:all 0.2s;margin-bottom:10px;}
+.upload-zone:hover{border-color:var(--purple);color:var(--purple);}
+.upload-zone input{display:none;}
+.img-thumb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.img-thumb{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;}
+.img-thumb img{width:100%;height:100%;object-fit:cover;}
+.img-thumb-del{position:absolute;top:2px;right:2px;background:rgba(255,0,0,0.8);border:none;color:#fff;border-radius:50%;width:18px;height:18px;font-size:0.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.music-status{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.06);padding:10px 12px;border-radius:10px;margin-bottom:10px;}
+.music-status .dot{width:8px;height:8px;border-radius:50%;background:#555;flex-shrink:0;}
+.music-status .dot.on{background:var(--green);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.music-status p{font-size:0.78rem;color:rgba(255,255,255,0.6);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.counter-style-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.cstyle-card{padding:12px 8px;border-radius:12px;background:rgba(255,255,255,0.05);border:2px solid transparent;cursor:pointer;text-align:center;transition:all 0.2s;}
+.cstyle-card:hover{background:rgba(255,255,255,0.1);}
+.cstyle-card.selected{border-color:var(--purple);background:rgba(192,132,252,0.15);}
+.cstyle-card .preview{font-family:'Fredoka One',cursive;font-size:1.6rem;margin-bottom:2px;}
+.cstyle-card span{font-size:0.65rem;color:rgba(255,255,255,0.5);font-weight:700;}
+.editor-preview{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow:auto;}
+.preview-label{font-size:0.7rem;color:rgba(255,255,255,0.3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.preview-frame{width:min(320px,90%);border-radius:24px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,0.5);transition:all 0.3s;overflow:hidden;background-size:cover;background-position:center;}
+.prev-counter-card{border-radius:18px;padding:16px 24px;text-align:center;width:100%;}
+.prev-counter-num{font-size:3rem;line-height:1;}
+.prev-counter-lbl{font-size:0.6rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.prev-counter-sub{font-size:0.6rem;margin-top:4px;opacity:0.6;}
+.prev-bulletin{border-radius:12px;padding:10px;width:100%;}
+.prev-bulletin h4{font-size:0.65rem;font-family:'Fredoka One',cursive;margin-bottom:5px;}
+.prev-post{border-radius:6px;padding:5px 7px;font-size:0.58rem;margin-top:4px;}
+.edivider{height:1px;background:rgba(255,255,255,0.07);margin:14px 0;}
+.etoggle{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.etoggle label{font-size:0.8rem;color:rgba(255,255,255,0.7);font-weight:600;}
+.switch{position:relative;width:40px;height:22px;flex-shrink:0;}
+.switch input{display:none;}
+.switch-slider{position:absolute;inset:0;background:#333;border-radius:22px;cursor:pointer;transition:0.3s;}
+.switch input:checked+.switch-slider{background:var(--purple);}
+.switch-slider::after{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:0.3s;}
+.switch input:checked+.switch-slider::after{transform:translateX(18px);}
+@media(max-width:640px){.editor-controls{width:220px;}.editor-preview{display:none;}.editor-sections{width:52px;}.esec-btn{width:40px;height:40px;}}
+
+/* ACHIEVEMENT TOAST */
+.ach-toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--dark),#4c1d95);color:#fff;border-radius:20px;padding:12px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,0.3);z-index:800;opacity:0;transition:opacity 0.4s;pointer-events:none;white-space:nowrap;}
+.ach-toast.show{opacity:1;}
+.ach-toast .t-icon{font-size:1.5rem;}
+.ach-toast .t-text strong{display:block;font-family:'Fredoka One',cursive;font-size:1rem;color:var(--primary);}
+.ach-toast .t-text span{font-size:0.75rem;color:rgba(255,255,255,0.7);}
+
+/* FOUND PAGE */
+.found-page{position:fixed;inset:0;background:linear-gradient(135deg,#FFD93D,#FF6B35,#C084FC);z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;}
+.found-page.open{display:flex;}
+.found-page h1{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,6vw,3.5rem);color:#fff;text-shadow:0 4px 16px rgba(0,0,0,0.18);margin:6px 0;}
+.found-num{font-family:'Fredoka One',cursive;font-size:clamp(4rem,18vw,9rem);color:#fff;line-height:1;text-shadow:0 8px 30px rgba(0,0,0,0.2);}
+.found-page .sub{color:rgba(255,255,255,0.85);font-size:1rem;font-weight:700;margin-top:14px;}
+.found-finder{font-family:'Fredoka One',cursive;font-size:1.2rem;color:rgba(255,255,255,0.9);margin-top:8px;}
+
+/* AUDIO FAB */
+.audio-fab{position:fixed;bottom:20px;right:20px;z-index:300;background:var(--dark);color:var(--primary);border:none;border-radius:50%;width:50px;height:50px;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.25);transition:transform 0.2s;}
+.audio-fab:hover{transform:scale(1.1);}
+
+/* STATUS */
+#statusBar{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--dark);color:var(--primary);font-family:'Fredoka One',cursive;font-size:0.9rem;padding:8px 20px;border-radius:30px;box-shadow:0 4px 16px rgba(0,0,0,0.3);z-index:400;display:none;white-space:nowrap;}
+
+/* DIVIDER */
+.divider{width:100%;max-width:560px;text-align:center;position:relative;margin:4px 0;}
+.divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#e0e0e0;}
+.divider span{position:relative;background:var(--bg-color,#F0EAFF);padding:0 12px;font-size:0.78rem;color:#bbb;font-weight:700;}
+
+/* ACHIEVEMENTS ACCORDION */
+.ach-category{border:2px solid #eee;border-radius:16px;overflow:hidden;margin-bottom:10px;}
+.ach-cat-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#f8f5ff;transition:background 0.2s;user-select:none;}
+.ach-cat-header:hover{background:#ede9fe;}
+.ach-cat-header.has-unlocked{background:linear-gradient(90deg,#FFF9ED,#f8f5ff);}
+.ach-cat-left{display:flex;align-items:center;gap:10px;}
+.ach-cat-label{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dark);}
+.ach-cat-desc{font-size:0.7rem;color:#aaa;font-weight:600;}
+.ach-cat-right{display:flex;align-items:center;gap:8px;}
+.ach-cat-pill{background:var(--primary);color:var(--dark);font-size:0.65rem;font-weight:800;padding:2px 8px;border-radius:20px;}
+.ach-cat-pill.empty{background:#eee;color:#aaa;}
+.ach-cat-arrow{font-size:0.8rem;color:#bbb;transition:transform 0.3s;}
+.ach-cat-arrow.open{transform:rotate(180deg);}
+.ach-cat-body{display:none;padding:12px;}
+.ach-cat-body.open{display:block;}
+
+/* SCANNER */
+.scanner-overlay{position:fixed;inset:0;background:rgba(10,5,30,0.95);z-index:700;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.scanner-overlay.open{display:flex;}
+.scanner-box{position:relative;width:280px;height:280px;border-radius:20px;overflow:hidden;background:#000;}
+.scanner-box video{width:100%;height:100%;object-fit:cover;}
+.scanner-frame{position:absolute;inset:0;pointer-events:none;}
+.scanner-frame::before,.scanner-frame::after{content:'';position:absolute;width:40px;height:40px;border-color:var(--primary);border-style:solid;}
+.scanner-frame::before{top:12px;left:12px;border-width:3px 0 0 3px;border-radius:8px 0 0 0;}
+.scanner-frame::after{bottom:12px;right:12px;border-width:0 3px 3px 0;border-radius:0 0 8px 0;}
+.scanner-corners{position:absolute;inset:0;pointer-events:none;}
+.scanner-corners::before,.scanner-corners::after{content:'';position:absolute;width:40px;height:40px;border-color:var(--primary);border-style:solid;}
+.scanner-corners::before{top:12px;right:12px;border-width:3px 3px 0 0;border-radius:0 8px 0 0;}
+.scanner-corners::after{bottom:12px;left:12px;border-width:0 0 3px 3px;border-radius:0 0 0 8px;}
+.scanner-line{position:absolute;left:12px;right:12px;height:2px;background:linear-gradient(90deg,transparent,var(--primary),transparent);animation:scanline 2s linear infinite;}
+@keyframes scanline{0%{top:12px}100%{top:calc(100% - 14px)}}
+.scanner-status{color:rgba(255,255,255,0.7);font-size:0.9rem;font-weight:700;font-family:'Nunito',sans-serif;}
+.scanner-result{background:var(--green);color:var(--dark);font-family:'Fredoka One',cursive;font-size:1.1rem;padding:10px 24px;border-radius:30px;display:none;}
+.scanner-error{background:#ff4757;color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;padding:10px 24px;border-radius:30px;display:none;}
+.scanner-cam-select{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:10px;padding:6px 10px;font-family:'Nunito',sans-serif;font-size:0.8rem;outline:none;max-width:260px;}
+
+@media(max-width:640px){
+  .sidebar{width:100%;position:fixed;inset:0;top:52px;z-index:190;max-height:calc(100vh - 52px);}
+  .counter-card{padding:28px 20px;}
+  .modal{padding:24px 18px;}
+  .admin-row{flex-direction:column;}
+  .achievements-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}
+  .topbar{flex-wrap:wrap;gap:6px;}
+}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay"><div class="spin-emoji">🎉</div><p>Cargando Mecchaches...</p></div>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="logo">🎉 Mecc<span>haches</span>!</div>
+  <div class="topbar-right">
+    <div class="tabs" id="mainTabs">
+      <button class="tab active" onclick="showPage('home')">🏠 Inicio</button>
+      <button class="tab" onclick="showPage('ranking')">🏆 Ranking</button>
+      <button class="tab" id="profileTab" style="display:none" onclick="showPage('profile')">👤 Yo</button>
+    </div>
+    <button class="btn btn-purple btn-sm" id="sidebarToggle" style="display:none" onclick="toggleSidebar()">📋 QRs</button>
+    <button class="btn btn-primary btn-sm" id="authBtn" onclick="openAuthModal()">Entrar / Registro</button>
+    <button class="btn btn-orange btn-sm" onclick="openScanner()">📷 Escanear</button>
+    <button class="btn btn-danger btn-sm" id="logoutBtn" style="display:none" onclick="logout()">Salir</button>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <h3>📲 Códigos QR</h3>
+    <div class="sidebar-block">
+      <div class="sidebar-actions">
+        <button class="btn btn-green btn-sm" onclick="generateQR()">✨ Nuevo QR</button>
+        <button class="btn btn-gray btn-sm" onclick="resetAllQRs()">🔄 Resetear todos</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAllQRs()">🗑️ Borrar todos</button>
+      </div>
+      <div id="qrStat" style="font-size:0.72rem;color:#aaa;margin-bottom:8px;"></div>
+      <div class="qr-list" id="qrList"><div class="empty-msg">Aún no hay QRs 😅</div></div>
+    </div>
+  </aside>
+
+  <main class="layout" style="flex:1;flex-direction:column;">
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+      <div class="images-section" id="imagesSection"><div class="images-grid" id="imagesGrid"></div></div>
+
+      <div class="counter-card">
+        <div class="counter-label">🏆 Mecchaches encontrados</div>
+        <div class="counter-number" id="counterNum">—</div>
+        <div class="counter-sub">¡A ver quién encuentra el siguiente! 👀</div>
+      </div>
+
+      <div class="admin-panel" id="adminPanel">
+        <h3>🛠️ Panel del Creador</h3>
+        <div class="admin-row">
+          <button class="btn btn-danger" onclick="resetCounter()">🔄 Resetear</button>
+          <button class="btn btn-green" onclick="generateQR()">✨ Generar QR</button>
+          <button class="btn btn-purple" onclick="openEditModal()">🎨 Editar web</button>
+        </div>
+        <div class="admin-row" style="align-items:center;gap:10px;margin-top:2px;">
+          <span style="font-size:0.8rem;font-weight:700;color:var(--purple);">Ajuste manual:</span>
+          <button class="btn btn-danger btn-sm" onclick="adjustCounter(-1)">− Restar 1</button>
+          <button class="btn btn-green btn-sm" onclick="adjustCounter(1)">+ Sumar 1</button>
+        </div>
+      </div>
+
+      <div class="bulletin">
+        <div class="bulletin-header">
+          <h2>📌 Tablón de anuncios</h2>
+          <button class="btn btn-orange btn-sm" id="addPostBtn" style="display:none" onclick="toggleAddPost()">+ Añadir</button>
+        </div>
+        <div class="add-post-area" id="addPostArea">
+          <textarea id="newPostText" placeholder="Escribe tu anuncio aquí..."></textarea>
+          <button class="btn btn-green btn-sm" onclick="addPost()">📢 Publicar</button>
+        </div>
+        <div class="bulletin-posts" id="bulletinPosts"><div class="empty-msg">✉️ Aquí aparecerán los anuncios</div></div>
+      </div>
+    </div>
+
+    <!-- RANKING PAGE -->
+    <div class="page" id="page-ranking">
+      <div class="section-card" style="max-width:560px;width:100%;">
+        <div class="section-title">🏆 Clasificación</div>
+        <div id="leaderboardList"><div class="empty-msg">Cargando ranking...</div></div>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page" id="page-profile">
+      <div class="profile-hero" id="profileHero">
+        <div class="profile-avatar" id="profileAvatar">😎</div>
+        <div class="profile-name" id="profileName">—</div>
+        <div class="profile-stats">
+          <div class="profile-stat"><div class="val" id="profileCount">0</div><div class="lbl">Encontrados</div></div>
+          <div class="profile-stat"><div class="val" id="profileRank">#—</div><div class="lbl">Posición</div></div>
+          <div class="profile-stat"><div class="val" id="profileAchCount">0</div><div class="lbl">Logros</div></div>
+        </div>
+      </div>
+
+      <div class="section-card" style="max-width:560px;width:100%;">
+        <div class="section-title">🎁 Mecchaches encontrados</div>
+        <div class="found-list" id="profileFoundList"><div class="empty-msg">Aún no has encontrado ninguno 😅</div></div>
+      </div>
+
+      <div class="section-card" style="max-width:560px;width:100%;">
+        <div class="section-title">🎖️ Logros</div>
+        <div class="achievements-grid" id="achievementsGrid"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- AUDIO & STATUS -->
+<button class="audio-fab" id="audioFab" onclick="toggleMusic()">🎵</button>
+<audio id="bgMusic" loop></audio>
+<!-- YouTube IFrame player (hidden) -->
+<div id="ytPlayer" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;pointer-events:none;"></div>
+<div id="statusBar"></div>
+<div class="ach-toast" id="achToast">
+  <div class="t-icon" id="achToastIcon">🎖️</div>
+  <div class="t-text"><strong id="achToastName"></strong><span id="achToastDesc"></span></div>
+</div>
+
+<!-- ═══ QR SCANNER ═══ -->
+<div class="scanner-overlay" id="scannerOverlay">
+  <div style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--primary);">📷 Escanear QR</div>
+  <select class="scanner-cam-select" id="scannerCamSelect" onchange="switchCamera(this.value)" style="display:none"></select>
+  <div class="scanner-box" id="scannerBox">
+    <video id="scannerVideo" playsinline autoplay muted></video>
+    <div class="scanner-frame"></div>
+    <div class="scanner-corners"></div>
+    <div class="scanner-line" id="scannerLine"></div>
+  </div>
+  <div class="scanner-status" id="scannerStatus">Apunta la cámara al código QR</div>
+  <div class="scanner-result" id="scannerResult">✅ ¡QR detectado!</div>
+  <div class="scanner-error" id="scannerError"></div>
+  <button class="btn btn-danger btn-sm" onclick="closeScanner()">✕ Cerrar</button>
+</div>
+
+<!-- ═══ AUTH MODAL ═══ -->
+<div class="overlay" id="authOverlay">
+  <div class="modal">
+    <div style="font-size:2rem;margin-bottom:6px;" id="authEmoji">👋</div>
+    <h2 id="authTitle">¡Bienvenido!</h2>
+    <p class="sub">Entra para ver tus logros y el ranking</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabLogin" onclick="switchAuthTab('login')">Iniciar sesión</button>
+      <button class="modal-tab" id="tabRegister" onclick="switchAuthTab('register')">Registrarse</button>
+    </div>
+    <div id="authLoginForm">
+      <input type="text" id="loginUser" placeholder="Nickname" maxlength="20" />
+      <input type="password" id="loginPass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')doLogin()" />
+      <div class="error-msg" id="loginError"></div>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:8px;" onclick="doLogin()">¡Entrar! 🚀</button>
+    </div>
+    <div id="authRegisterForm" style="display:none">
+      <input type="text" id="regUser" placeholder="Elige un nickname" maxlength="20" />
+      <input type="password" id="regPass" placeholder="Contraseña" />
+      <input type="password" id="regPass2" placeholder="Repite la contraseña" onkeydown="if(event.key==='Enter')doRegister()" />
+      <div class="error-msg" id="regError"></div>
+      <button class="btn btn-green" style="width:100%;margin-bottom:8px;" onclick="doRegister()">¡Crear cuenta! 🎉</button>
+    </div>
+    <button class="btn btn-gray btn-sm" style="width:100%" onclick="closeAuthModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ═══ CANVA EDITOR ═══ -->
+<div class="editor-overlay" id="editOverlay">
+  <!-- Top bar -->
+  <div class="editor-topbar">
+    <h2>🎨 Editor de diseño</h2>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-green btn-sm" onclick="applyEdit()">✅ Guardar y aplicar</button>
+      <button class="btn btn-gray btn-sm" onclick="closeEditModal()">✕ Cerrar</button>
+    </div>
+  </div>
+  <div class="editor-body">
+    <!-- Icon nav -->
+    <div class="editor-sections">
+      <button class="esec-btn active" onclick="switchEdSection('fondo')" id="esec-fondo" title="Fondo"><span style="font-size:1.4rem">🖼️</span><span>Fondo</span></button>
+      <button class="esec-btn" onclick="switchEdSection('colores')" id="esec-colores" title="Colores"><span style="font-size:1.4rem">🎨</span><span>Color</span></button>
+      <button class="esec-btn" onclick="switchEdSection('fuentes')" id="esec-fuentes" title="Tipografía"><span style="font-size:1.4rem">✏️</span><span>Fuente</span></button>
+      <button class="esec-btn" onclick="switchEdSection('contador')" id="esec-contador" title="Contador"><span style="font-size:1.4rem">🔢</span><span>Contador</span></button>
+      <button class="esec-btn" onclick="switchEdSection('imagenes')" id="esec-imagenes" title="Imágenes"><span style="font-size:1.4rem">📸</span><span>Fotos</span></button>
+      <button class="esec-btn" onclick="switchEdSection('musica')" id="esec-musica" title="Música"><span style="font-size:1.4rem">🎵</span><span>Música</span></button>
+    </div>
+
+    <!-- Controls panel -->
+    <div class="editor-controls">
+
+      <!-- FONDO -->
+      <div class="epanel active" id="epanel-fondo">
+        <h3>🖼️ Fondo</h3>
+        <div class="erow">
+          <span class="elabel">Color sólido</span>
+          <div class="swatch-grid" id="bgSwatches"></div>
+          <input type="color" class="einput-color" id="editBgColor" value="#F0EAFF" oninput="onBgColorPick(this.value)" style="margin-bottom:10px;">
+        </div>
+        <div class="edivider"></div>
+        <div class="erow">
+          <span class="elabel">Gradientes</span>
+          <div class="grad-grid" id="gradGrid"></div>
+        </div>
+        <div class="edivider"></div>
+        <div class="erow">
+          <span class="elabel">Patrones</span>
+          <div class="pattern-grid" id="patternGrid"></div>
+        </div>
+        <div class="edivider"></div>
+        <div class="erow">
+          <span class="elabel">Imagen de fondo (URL)</span>
+          <input type="url" class="einput" id="editBgImage" placeholder="https://imagen.jpg" oninput="livePreview()">
+        </div>
+        <div class="erow">
+          <span class="elabel">Opacidad del fondo <span id="bgOpacityVal">100%</span></span>
+          <input type="range" class="eslider" id="editBgOpacity" min="10" max="100" value="100" oninput="onBgOpacity(this.value)">
+        </div>
+      </div>
+
+      <!-- COLORES -->
+      <div class="epanel" id="epanel-colores">
+        <h3>🎨 Colores de la UI</h3>
+        <div class="erow">
+          <span class="elabel">Color principal (botones, bordes)</span>
+          <div class="swatch-grid" id="primarySwatches"></div>
+          <input type="color" class="einput-color" id="editPrimaryColor" value="#FFD93D" oninput="livePreview()">
+        </div>
+        <div class="edivider"></div>
+        <div class="erow">
+          <span class="elabel">Color de acento (títulos, detalles)</span>
+          <div class="swatch-grid" id="accentSwatches"></div>
+          <input type="color" class="einput-color" id="editAccentColor" value="#FF6B35" oninput="livePreview()">
+        </div>
+        <div class="edivider"></div>
+        <div class="erow">
+          <span class="elabel">Color del contador</span>
+          <div class="swatch-grid" id="counterColorSwatches"></div>
+          <input type="color" class="einput-color" id="editCounterColor" value="#2D1B69" oninput="livePreview()">
+        </div>
+        <div class="edivider"></div>
+        <div class="erow">
+          <span class="elabel">Color de tarjetas</span>
+          <input type="color" class="einput-color" id="editCardColor" value="#ffffff" oninput="livePreview()">
+        </div>
+        <div class="erow">
+          <span class="elabel">Opacidad tarjetas <span id="cardOpacityVal">100%</span></span>
+          <input type="range" class="eslider" id="editCardOpacity" min="20" max="100" value="100" oninput="onCardOpacity(this.value)">
+        </div>
+      </div>
+
+      <!-- FUENTES -->
+      <div class="epanel" id="epanel-fuentes">
+        <h3>✏️ Tipografía</h3>
+        <span class="elabel">Fuente del contador y títulos</span>
+        <div class="font-grid" id="fontGrid"></div>
+        <div class="edivider"></div>
+        <div class="erow">
+          <span class="elabel">Texto principal del contador</span>
+          <input type="text" class="einput" id="editCounterLabel" placeholder="🏆 Mecchaches encontrados" oninput="livePreview()" maxlength="50">
+        </div>
+        <div class="erow">
+          <span class="elabel">Subtexto del contador</span>
+          <input type="text" class="einput" id="editCounterSub" placeholder="¡A ver quién encuentra el siguiente! 👀" oninput="livePreview()" maxlength="80">
+        </div>
+        <div class="erow">
+          <span class="elabel">Tamaño contador <span id="counterSizeVal">9rem</span></span>
+          <input type="range" class="eslider" id="editCounterSize" min="4" max="14" value="9" oninput="onCounterSize(this.value)">
+        </div>
+      </div>
+
+      <!-- CONTADOR -->
+      <div class="epanel" id="epanel-contador">
+        <h3>🔢 Estilo del contador</h3>
+        <span class="elabel">Diseño de la tarjeta</span>
+        <div class="counter-style-grid" id="counterStyleGrid"></div>
+        <div class="edivider"></div>
+        <div class="erow">
+          <span class="elabel">Radio de esquinas tarjeta <span id="cardRadiusVal">30px</span></span>
+          <input type="range" class="eslider" id="editCardRadius" min="0" max="50" value="30" oninput="onCardRadius(this.value)">
+        </div>
+        <div class="erow">
+          <span class="elabel">Sombra tarjeta</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-sm" style="font-size:0.75rem;" onclick="setShadow('none')">Sin sombra</button>
+            <button class="btn btn-sm" style="font-size:0.75rem;" onclick="setShadow('soft')">Suave</button>
+            <button class="btn btn-sm" style="font-size:0.75rem;" onclick="setShadow('hard')">Fuerte</button>
+            <button class="btn btn-sm" style="font-size:0.75rem;" onclick="setShadow('color')">Color</button>
+          </div>
+        </div>
+        <div class="edivider"></div>
+        <div class="erow">
+          <span class="elabel">Grosor del borde tarjeta <span id="borderWidthVal">4px</span></span>
+          <input type="range" class="eslider" id="editBorderWidth" min="0" max="12" value="4" oninput="onBorderWidth(this.value)">
+        </div>
+      </div>
+
+      <!-- IMÁGENES -->
+      <div class="epanel" id="epanel-imagenes">
+        <h3>📸 Imágenes decorativas</h3>
+        <label class="upload-zone" for="editImageFile">
+          <div style="font-size:2rem;margin-bottom:6px;">📤</div>
+          <div>Haz clic para subir una imagen</div>
+          <div style="font-size:0.7rem;margin-top:4px;opacity:0.6;">PNG, JPG, GIF, WebP</div>
+          <input type="file" id="editImageFile" accept="image/*" onchange="onImageUpload(this)">
+        </label>
+        <div class="img-thumb-grid" id="imgThumbGrid"></div>
+        <button class="btn btn-danger btn-sm" style="margin-top:8px;width:100%;" onclick="clearImages()">🗑️ Borrar todas las imágenes</button>
+      </div>
+
+      <!-- MÚSICA -->
+      <div class="epanel" id="epanel-musica">
+        <h3>🎵 Música de fondo</h3>
+        <div class="music-status" id="musicStatus">
+          <div class="dot" id="musicDot"></div>
+          <p id="musicStatusText">Sin música configurada</p>
+        </div>
+
+        <!-- Source tabs -->
+        <div style="display:flex;gap:0;background:rgba(255,255,255,0.06);border-radius:20px;padding:3px;margin-bottom:14px;">
+          <button class="modal-tab active" id="mtabYT" onclick="switchMusicTab('yt')" style="flex:1;color:#fff;">▶️ YouTube</button>
+          <button class="modal-tab" id="mtabMP3" onclick="switchMusicTab('mp3')" style="flex:1;color:#fff;">🎧 MP3</button>
+        </div>
+
+        <div id="musicYTPanel">
+          <div class="erow">
+            <span class="elabel">URL o ID de YouTube</span>
+            <input type="text" class="einput" id="editYTUrl" placeholder="https://youtube.com/watch?v=... o ID" oninput="updateMusicStatus()">
+          </div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-bottom:10px;line-height:1.5;">
+            💡 Pega el enlace completo de YouTube o solo el ID del vídeo (lo que va después de <b style="color:rgba(255,255,255,0.5)">?v=</b>). El reproductor quedará oculto para los visitantes.
+          </div>
+        </div>
+
+        <div id="musicMP3Panel" style="display:none">
+          <div class="erow">
+            <span class="elabel">URL directa de archivo MP3</span>
+            <input type="url" class="einput" id="editMusicUrl" placeholder="https://...archivo.mp3" oninput="updateMusicStatus()">
+          </div>
+        </div>
+
+        <div class="erow" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-green btn-sm" onclick="testMusic()">▶️ Probar</button>
+          <button class="btn btn-danger btn-sm" onclick="stopMusic()">⏹️ Parar</button>
+          <button class="btn btn-gray btn-sm" onclick="clearMusic()">🗑️ Quitar</button>
+        </div>
+        <div class="edivider"></div>
+        <div class="erow">
+          <span class="elabel">Volumen <span id="volumeVal">80%</span></span>
+          <input type="range" class="eslider" id="editVolume" min="0" max="100" value="80" oninput="onVolume(this.value)">
+        </div>
+        <div class="etoggle">
+          <label>Reproducción automática</label>
+          <label class="switch"><input type="checkbox" id="editAutoplay"><div class="switch-slider"></div></label>
+        </div>
+      </div>
+
+    </div><!-- /controls -->
+
+    <!-- Live preview -->
+    <div class="editor-preview">
+      <div class="preview-label">Vista previa en vivo</div>
+      <div class="preview-frame" id="previewFrame">
+        <div class="prev-counter-card" id="prevCounterCard">
+          <div class="prev-counter-lbl" id="prevLbl">🏆 MECCHACHES ENCONTRADOS</div>
+          <div class="prev-counter-num" id="prevNum">42</div>
+          <div class="prev-counter-sub" id="prevSub">¡A ver quién encuentra el siguiente! 👀</div>
+        </div>
+        <div class="prev-bulletin" id="prevBulletin">
+          <h4 id="prevBullTitle">📌 Tablón de anuncios</h4>
+          <div class="prev-post" id="prevPost1">🎉 ¡Bienvenidos al juego!</div>
+          <div class="prev-post" id="prevPost2">📍 Pista: mira cerca del río...</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /editor-body -->
+</div>
+
+<!-- Hidden YouTube player -->
+<div id="ytPlayerWrap" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;pointer-events:none;">
+  <div id="ytPlayer"></div>
+</div>
+
+<!-- ═══ FOUND PAGE ═══ -->
+<div class="found-page" id="foundPage">
+  <div class="spin-emoji">🎊</div>
+  <h1>¡Has encontrado el</h1>
+  <div class="found-num" id="foundNum">?</div>
+  <h1>Mecchaches! 🎉</h1>
+  <div class="found-finder" id="foundFinder"></div>
+  <p class="sub" id="foundCountdown">Volviendo a casa en 5s...</p>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  SUPABASE
+// ═══════════════════════════════════════════
+const SUPA_URL = 'https://ykekapqneazmcyrrbxoa.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrZWthcHFuZWF6bWN5cnJieG9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NzQ4NzEsImV4cCI6MjA5ODE1MDg3MX0.ZIYUSDWNA5OhU73eev86BkEpo-2DQUDux0R6VB-fj7k';
+const H = { 'Content-Type':'application/json', 'apikey':SUPA_KEY, 'Authorization':'Bearer '+SUPA_KEY };
+
+async function dbGet(key) {
+  const r = await fetch(`${SUPA_URL}/rest/v1/mecchaches_state?key=eq.${encodeURIComponent(key)}&select=value`, {headers:H});
+  if (!r.ok) return null;
+  const rows = await r.json();
+  return rows.length ? rows[0].value : null;
+}
+async function dbSet(key, value) {
+  await fetch(`${SUPA_URL}/rest/v1/mecchaches_state`, {
+    method:'POST', headers:{...H,'Prefer':'resolution=merge-duplicates'},
+    body: JSON.stringify({key, value, updated_at: new Date().toISOString()})
+  });
+}
+
+// Users table
+async function userGet(nickname) {
+  const r = await fetch(`${SUPA_URL}/rest/v1/mecchaches_users?nickname=eq.${encodeURIComponent(nickname)}&select=*`, {headers:H});
+  if (!r.ok) return null;
+  const rows = await r.json();
+  return rows.length ? rows[0] : null;
+}
+async function userCreate(id, nickname, password) {
+  const r = await fetch(`${SUPA_URL}/rest/v1/mecchaches_users`, {
+    method:'POST', headers:{...H,'Prefer':'return=representation'},
+    body: JSON.stringify({id, nickname, password, found_qrs:[]})
+  });
+  return r.ok || r.status === 201;
+}
+async function userUpdate(id, found_qrs) {
+  await fetch(`${SUPA_URL}/rest/v1/mecchaches_users?id=eq.${encodeURIComponent(id)}`, {
+    method:'PATCH', headers:H,
+    body: JSON.stringify({found_qrs, updated_at: new Date().toISOString()})
+  });
+}
+async function getAllUsers() {
+  const r = await fetch(`${SUPA_URL}/rest/v1/mecchaches_users?select=id,nickname,found_qrs`, {headers:H});
+  if (!r.ok) return [];
+  return await r.json();
+}
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+const K = {counter:'counter',qrs:'qrs',posts:'posts',config:'config'};
+const ADMIN_USER = 'creador';
+const ADMIN_PASS = 'mecchaches2024';
+const BLOCKED_NAMES = ['creador','creator','admin','administrador'];
+
+let S = { counter:0, qrs:[], posts:[], config:{bgColor:'#F0EAFF',bgImage:'',musicUrl:'',images:[]} };
+let session = null; // { id, nickname, found_qrs, isAdmin }
+let allUsers = [];
+
+async function loadAll() {
+  const [counter,qrs,posts,config] = await Promise.all([dbGet(K.counter),dbGet(K.qrs),dbGet(K.posts),dbGet(K.config)]);
+  S.counter = counter ?? 0;
+  S.qrs     = qrs     ?? [];
+  S.posts   = posts   ?? [];
+  S.config  = config  ?? {bgColor:'#F0EAFF',bgImage:'',musicUrl:'',images:[]};
+  allUsers  = await getAllUsers();
+}
+
+// ═══════════════════════════════════════════
+//  ACHIEVEMENTS DEFINITION
+// ═══════════════════════════════════════════
+const ACH_CATEGORIES = [
+  {
+    id: 'coleccionista',
+    label: '🎯 Coleccionista',
+    desc: 'Por encontrar Mecchaches',
+    achievements: [
+      { id:'first',   icon:'🥇', name:'Primer golpe',   desc:'Encuentra tu primer Mecchaches',  check: u => u.found_qrs.length >= 1 },
+      { id:'three',   icon:'🎯', name:'Trío mágico',    desc:'Encuentra 3 Mecchaches',          check: u => u.found_qrs.length >= 3 },
+      { id:'five',    icon:'⭐', name:'Alta demanda',   desc:'Encuentra 5 Mecchaches',          check: u => u.found_qrs.length >= 5 },
+      { id:'ten',     icon:'🔥', name:'En llamas',      desc:'Encuentra 10 Mecchaches',         check: u => u.found_qrs.length >= 10 },
+      { id:'fifteen', icon:'💫', name:'Estrella',       desc:'Encuentra 15 Mecchaches',         check: u => u.found_qrs.length >= 15 },
+      { id:'twenty',  icon:'💎', name:'Diamante',       desc:'Encuentra 20 Mecchaches',         check: u => u.found_qrs.length >= 20 },
+      { id:'fifty',   icon:'🏅', name:'Leyenda',        desc:'Encuentra 50 Mecchaches',         check: u => u.found_qrs.length >= 50 },
+      { id:'hundred', icon:'🚀', name:'Centurión',      desc:'Encuentra 100 Mecchaches',        check: u => u.found_qrs.length >= 100 },
+    ]
+  },
+  {
+    id: 'numeros',
+    label: '🔢 Números especiales',
+    desc: 'Por encontrar números concretos',
+    achievements: [
+      { id:'odd',      icon:'🎲', name:'Número impar',   desc:'Encuentra un Mecchaches de número impar',  check: u => u.found_qrs.some(q => q.num % 2 !== 0) },
+      { id:'even',     icon:'⚖️', name:'Número par',     desc:'Encuentra un Mecchaches de número par',    check: u => u.found_qrs.some(q => q.num % 2 === 0) },
+      { id:'num7',     icon:'7️⃣', name:'El siete',       desc:'Encuentra el Mecchaches número 7',         check: u => u.found_qrs.some(q => q.num === 7) },
+      { id:'num13',    icon:'🌑', name:'El trece',        desc:'Encuentra el Mecchaches número 13',        check: u => u.found_qrs.some(q => q.num === 13) },
+      { id:'round10',  icon:'🔟', name:'Decena redonda',  desc:'Encuentra un Mecchaches múltiplo de 10',   check: u => u.found_qrs.some(q => q.num % 10 === 0) },
+      { id:'palindrome',icon:'🔁','name':'Palíndromo',   desc:'Encuentra un Mecchaches cuyo número sea palíndromo (11, 22, 33...)', check: u => u.found_qrs.some(q => String(q.num) === String(q.num).split('').reverse().join('') && q.num >= 10) },
+      { id:'prime',    icon:'🧮', name:'Número primo',   desc:'Encuentra un Mecchaches de número primo',  check: u => u.found_qrs.some(q => isPrime(q.num)) },
+    ]
+  },
+  {
+    id: 'velocidad',
+    label: '⚡ Velocidad',
+    desc: 'Por encontrarlos rápido',
+    achievements: [
+      { id:'double',   icon:'🐇', name:'Doble o nada',   desc:'Encuentra 2 en el mismo día',              check: u => hasNInOneDay(u, 2) },
+      { id:'triple',   icon:'🏃', name:'Triatlón',       desc:'Encuentra 3 en el mismo día',              check: u => hasNInOneDay(u, 3) },
+      { id:'streak3',  icon:'📅', name:'Racha de 3',     desc:'Encuentra al menos 1 durante 3 días seguidos', check: u => hasStreakDays(u, 3) },
+      { id:'streak7',  icon:'🗓️', name:'Semana perfecta', desc:'Encuentra al menos 1 durante 7 días seguidos', check: u => hasStreakDays(u, 7) },
+      { id:'earlybird',icon:'🌅', name:'Madrugador',     desc:'Encuentra un Mecchaches antes de las 9:00',check: u => u.found_qrs.some(q => { const h=new Date(q.foundAt).getHours(); return h>=0&&h<9; }) },
+      { id:'nightowl', icon:'🦉', name:'Ave nocturna',   desc:'Encuentra un Mecchaches después de las 23:00', check: u => u.found_qrs.some(q => new Date(q.foundAt).getHours() >= 23) },
+      { id:'weekend',  icon:'🎉', name:'Fin de semana',  desc:'Encuentra un Mecchaches en sábado o domingo', check: u => u.found_qrs.some(q => [0,6].includes(new Date(q.foundAt).getDay())) },
+    ]
+  },
+  {
+    id: 'ranking',
+    label: '🏆 Ranking',
+    desc: 'Por tu posición en la tabla',
+    achievements: [
+      { id:'top1',  icon:'👑', name:'El rey/reina',   desc:'Ocupa el 1er puesto del ranking',    check: (u,all) => all.length > 0 && all.sort((a,b)=>(b.found_qrs||[]).length-(a.found_qrs||[]).length)[0]?.id === u.id },
+      { id:'top3',  icon:'🥉', name:'Podio',          desc:'Ocupa el top 3 del ranking',         check: (u,all) => { const s=all.slice().sort((a,b)=>(b.found_qrs||[]).length-(a.found_qrs||[]).length); return s.slice(0,3).some(x=>x.id===u.id); } },
+      { id:'top5',  icon:'🎖️', name:'Top 5',          desc:'Ocupa el top 5 del ranking',         check: (u,all) => { const s=all.slice().sort((a,b)=>(b.found_qrs||[]).length-(a.found_qrs||[]).length); return s.slice(0,5).some(x=>x.id===u.id); } },
+      { id:'beat',  icon:'😈', name:'Supera a alguien', desc:'Supera al menos a 1 jugador',       check: (u,all) => { const s=all.slice().sort((a,b)=>(b.found_qrs||[]).length-(a.found_qrs||[]).length); const i=s.findIndex(x=>x.id===u.id); return i>0&&i<s.length-1; } },
+    ]
+  },
+  {
+    id: 'secretos',
+    label: '🔮 Secretos',
+    desc: 'Logros misteriosos',
+    achievements: [
+      { id:'lonely', icon:'🏝️', name:'Pionero',     desc:'Sé de los primeros 3 jugadores en registrarse',   check: (u,all) => { const s=all.slice().sort((a,b)=>(a.id||'').localeCompare(b.id||'')); return s.findIndex(x=>x.id===u.id) < 3 && s.findIndex(x=>x.id===u.id) >= 0; } },
+      { id:'ten_diff', icon:'🗺️', name:'Explorador',   desc:'Encuentra Mecchaches con 10 números distintos',check: u => new Set(u.found_qrs.map(q=>q.num)).size >= 10 },
+      { id:'all_even', icon:'⚗️', name:'Par total',    desc:'Todos tus Mecchaches son de número par',check: u => u.found_qrs.length >= 3 && u.found_qrs.every(q=>q.num%2===0) },
+      { id:'patience', icon:'🧘', name:'Paciencia zen', desc:'Tu primer Mecchaches fue el número 1', check: u => u.found_qrs.length > 0 && [...u.found_qrs].sort((a,b)=>new Date(a.foundAt)-new Date(b.foundAt))[0]?.num === 1 },
+      { id:'comeback', icon:'⏰', name:'Vuelvo en seguida', desc:'Encuentra dos Mecchaches con más de 7 días entre ellos', check: u => hasGapDays(u, 7) },
+    ]
+  },
+];
+
+// Flatten for backward-compat
+const ACHIEVEMENTS = ACH_CATEGORIES.flatMap(c => c.achievements);
+
+function isPrime(n) {
+  if (n < 2) return false;
+  for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
+  return true;
+}
+function hasNInOneDay(u, n) {
+  const days = {};
+  (u.found_qrs || []).forEach(q => { const d=(q.foundAt||'').slice(0,10); if(d) days[d]=(days[d]||0)+1; });
+  return Object.values(days).some(v => v >= n);
+}
+function hasTwoInOneDay(u) { return hasNInOneDay(u, 2); }
+function hasStreakDays(u, streak) {
+  const days = [...new Set((u.found_qrs||[]).map(q=>(q.foundAt||'').slice(0,10)).filter(Boolean))].sort();
+  if (days.length < streak) return false;
+  let best = 1, cur = 1;
+  for (let i = 1; i < days.length; i++) {
+    const diff = (new Date(days[i]) - new Date(days[i-1])) / 86400000;
+    cur = diff === 1 ? cur + 1 : 1;
+    best = Math.max(best, cur);
+  }
+  return best >= streak;
+}
+function hasGapDays(u, days) {
+  const sorted = [...(u.found_qrs||[])].filter(q=>q.foundAt).sort((a,b)=>new Date(a.foundAt)-new Date(b.foundAt));
+  for (let i = 1; i < sorted.length; i++) {
+    const diff = (new Date(sorted[i].foundAt) - new Date(sorted[i-1].foundAt)) / 86400000;
+    if (diff >= days) return true;
+  }
+  return false;
+}
+
+function getUnlocked(user, all) {
+  return ACHIEVEMENTS.filter(a => { try { return a.check(user, all); } catch { return false; } }).map(a => a.id);
+}
+
+// ═══════════════════════════════════════════
+//  PAGE NAV
+// ═══════════════════════════════════════════
+let currentPage = 'home';
+function showPage(name) {
+  currentPage = name;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const map = {home:0,ranking:1,profile:2};
+  document.querySelectorAll('.tab')[map[name]]?.classList.add('active');
+  if (name === 'ranking') renderLeaderboard();
+  if (name === 'profile') renderProfile();
+}
+
+// ─── Session persistence via localStorage ───
+function saveSession() {
+  // Only save id, nickname and isAdmin — found_qrs always re-fetched from DB on restore
+  if (session) localStorage.setItem('mecchaches_session', JSON.stringify({ id:session.id, nickname:session.nickname, isAdmin:session.isAdmin }));
+  else localStorage.removeItem('mecchaches_session');
+}
+async function restoreSession() {
+  const raw = localStorage.getItem('mecchaches_session');
+  if (!raw) return;
+  try {
+    const saved = JSON.parse(raw);
+    if (saved.isAdmin) {
+      session = { id:'__admin__', nickname:saved.nickname, found_qrs:[], isAdmin:true };
+      return;
+    }
+    // Always re-fetch from DB so found_qrs is 100% current after any QR scan
+    const user = await userGet(saved.nickname);
+    if (user) {
+      session = { id:user.id, nickname:user.nickname, found_qrs:user.found_qrs||[], isAdmin:false };
+      // Also sync this user into allUsers so getUnlocked works correctly
+      const idx = allUsers.findIndex(u => u.id === user.id);
+      if (idx !== -1) allUsers[idx].found_qrs = user.found_qrs||[];
+      else allUsers.push({ id:user.id, nickname:user.nickname, found_qrs:user.found_qrs||[] });
+    } else {
+      localStorage.removeItem('mecchaches_session');
+    }
+  } catch(e) { localStorage.removeItem('mecchaches_session'); }
+}
+
+// ═══════════════════════════════════════════
+//  AUTH MODAL
+// ═══════════════════════════════════════════
+let authTab = 'login';
+function openAuthModal() { document.getElementById('authOverlay').classList.add('open'); }
+function closeAuthModal() { document.getElementById('authOverlay').classList.remove('open'); clearAuthErrors(); }
+function clearAuthErrors() { document.getElementById('loginError').textContent=''; document.getElementById('regError').textContent=''; }
+
+function switchAuthTab(tab) {
+  authTab = tab;
+  document.getElementById('authLoginForm').style.display    = tab==='login'    ? '' : 'none';
+  document.getElementById('authRegisterForm').style.display = tab==='register' ? '' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  clearAuthErrors();
+}
+
+async function doLogin() {
+  const nick = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const err  = document.getElementById('loginError');
+  if (!nick || !pass) { err.textContent='Rellena todos los campos'; return; }
+
+  // Admin check
+  if (nick.toLowerCase() === ADMIN_USER && pass === ADMIN_PASS) {
+    session = { id:'__admin__', nickname: ADMIN_USER, found_qrs:[], isAdmin:true };
+    saveSession(); closeAuthModal(); renderUI(); showStatus('👑 Bienvenido, Creador!'); return;
+  }
+  if (nick.toLowerCase() === ADMIN_USER) { err.textContent='❌ Contraseña incorrecta'; return; }
+
+  const user = await userGet(nick);
+  if (!user) { err.textContent='❌ Ese nickname no existe'; return; }
+  if (user.password !== pass) { err.textContent='❌ Contraseña incorrecta'; return; }
+  session = { id:user.id, nickname:user.nickname, found_qrs:user.found_qrs||[], isAdmin:false };
+  saveSession(); closeAuthModal(); renderUI(); showPage('profile'); showStatus('👋 ¡Hola, '+session.nickname+'!');
+}
+
+async function doRegister() {
+  const nick  = document.getElementById('regUser').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const err   = document.getElementById('regError');
+  if (!nick || !pass || !pass2) { err.textContent='Rellena todos los campos'; return; }
+  if (nick.length < 3) { err.textContent='El nickname debe tener al menos 3 letras'; return; }
+  if (/[^a-zA-Z0-9_\-áéíóúÁÉÍÓÚñÑ]/.test(nick)) { err.textContent='Solo letras, números, _ y -'; return; }
+  if (BLOCKED_NAMES.includes(nick.toLowerCase())) { err.textContent='❌ Ese nombre no está permitido'; return; }
+  if (pass.length < 4) { err.textContent='La contraseña debe tener al menos 4 caracteres'; return; }
+  if (pass !== pass2) { err.textContent='Las contraseñas no coinciden'; return; }
+
+  const existing = await userGet(nick);
+  if (existing) { err.textContent='❌ Ese nickname ya está pillado 😅'; return; }
+
+  const id = 'u_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+  const ok = await userCreate(id, nick, pass);
+  if (!ok) { err.textContent='❌ Error al crear cuenta. Inténtalo de nuevo.'; return; }
+  session = { id, nickname:nick, found_qrs:[], isAdmin:false };
+  allUsers = await getAllUsers();
+  saveSession(); closeAuthModal(); renderUI(); showPage('profile');
+  showStatus('🎉 ¡Cuenta creada! Bienvenid@, '+nick+'!');
+}
+
+function logout() {
+  session = null;
+  saveSession();
+  document.getElementById('sidebar').classList.remove('open');
+  showPage('home');
+  renderUI();
+}
+
+// ═══════════════════════════════════════════
+//  RENDER UI
+// ═══════════════════════════════════════════
+function renderUI() {
+  document.getElementById('counterNum').textContent = S.counter;
+  const isAdmin = session?.isAdmin;
+  const loggedIn = !!session;
+
+  document.getElementById('authBtn').style.display    = loggedIn ? 'none' : '';
+  document.getElementById('logoutBtn').style.display  = loggedIn ? '' : 'none';
+  document.getElementById('sidebarToggle').style.display = isAdmin ? '' : 'none';
+  document.getElementById('adminPanel').classList.toggle('visible', !!isAdmin);
+  document.getElementById('addPostBtn').style.display = isAdmin ? '' : 'none';
+  document.getElementById('profileTab').style.display = loggedIn && !isAdmin ? '' : 'none';
+
+  // Topbar label
+  if (loggedIn) {
+    const btn = document.getElementById('logoutBtn');
+    btn.textContent = (isAdmin ? '👑 ' : '👤 ') + session.nickname + ' · Salir';
+  }
+
+  const cfg = S.config;
+  applyConfigToPage();
+
+  renderPosts();
+  renderQRList();
+  renderImages();
+  if (currentPage === 'ranking') renderLeaderboard();
+  if (currentPage === 'profile') renderProfile();
+}
+
+// ═══════════════════════════════════════════
+//  LEADERBOARD
+// ═══════════════════════════════════════════
+function renderLeaderboard() {
+  const container = document.getElementById('leaderboardList');
+  const sorted = [...allUsers].sort((a,b)=>(b.found_qrs||[]).length-(a.found_qrs||[]).length);
+  if (!sorted.length) { container.innerHTML='<div class="empty-msg">¡Nadie ha encontrado nada todavía! 👀</div>'; return; }
+  const medals = ['🥇','🥈','🥉'];
+  container.innerHTML = sorted.map((u,i) => {
+    const count = (u.found_qrs||[]).length;
+    const isMe  = session && u.id === session.id;
+    const cls   = isMe?'me':i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const avatar = getAvatar(u.nickname);
+    return `<div class="lb-row ${cls}">
+      <div class="lb-pos">${medals[i]||'#'+(i+1)}</div>
+      <div class="lb-avatar">${avatar}</div>
+      <div class="lb-name">${esc(u.nickname)}${isMe?' <span style="color:var(--purple);font-size:0.7rem;">(tú)</span>':''}</div>
+      <div class="lb-count">${count} <span>encontrados</span></div>
+    </div>`;
+  }).join('');
+}
+
+function getAvatar(nick) {
+  const avatars = ['🦊','🐸','🦁','🐙','🐝','🦋','🐉','🦄','🐺','🦅','🦩','🐨','🐼','🦊','🐯'];
+  let hash = 0; for (const c of nick) hash = (hash*31+c.charCodeAt(0))%avatars.length;
+  return avatars[Math.abs(hash) % avatars.length];
+}
+
+// ═══════════════════════════════════════════
+//  PROFILE
+// ═══════════════════════════════════════════
+function renderProfile() {
+  if (!session || session.isAdmin) return;
+  const u = session;
+  const sorted = [...allUsers].sort((a,b)=>(b.found_qrs||[]).length-(a.found_qrs||[]).length);
+  const rank = sorted.findIndex(x=>x.id===u.id)+1;
+  const count = (u.found_qrs||[]).length;
+  const unlocked = getUnlocked(u, sorted);
+
+  document.getElementById('profileAvatar').textContent = getAvatar(u.nickname);
+  document.getElementById('profileName').textContent   = u.nickname;
+  document.getElementById('profileCount').textContent  = count;
+  document.getElementById('profileRank').textContent   = rank ? '#'+rank : '#—';
+  document.getElementById('profileAchCount').textContent = unlocked.length;
+
+  // Found list
+  const fl = document.getElementById('profileFoundList');
+  if (!count) { fl.innerHTML='<div class="empty-msg">Aún no has encontrado ninguno 😅</div>'; }
+  else { fl.innerHTML = [...u.found_qrs].sort((a,b)=>a.num-b.num).map(q=>`<div class="found-chip">🎯 Nº${q.num}</div>`).join(''); }
+
+  // Achievements
+  const ag = document.getElementById('achievementsGrid');
+  ag.innerHTML = ACHIEVEMENTS.map(a => {
+    const ok = unlocked.includes(a.id);
+    return `<div class="achievement ${ok?'unlocked':'locked'}">
+      <div class="ach-icon">${a.icon}</div>
+      <div class="ach-name">${a.name}</div>
+      <div class="ach-desc">${a.desc}</div>
+      ${ok?'<div class="ach-new">✓ Conseguido</div>':''}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+//  DEVICE FINGERPRINT  (persisted locally)
+// ═══════════════════════════════════════════
+function getDeviceId() {
+  let id = localStorage.getItem('mecchaches_device_id');
+  if (!id) {
+    id = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('mecchaches_device_id', id);
+  }
+  return id;
+}
+
+// Track which QR ids this device has already scanned (survives resets)
+function getDeviceScanned() {
+  try { return JSON.parse(localStorage.getItem('mecchaches_scanned') || '{}'); } catch { return {}; }
+}
+function markDeviceScanned(qrId) {
+  const s = getDeviceScanned();
+  s[qrId] = Date.now();
+  localStorage.setItem('mecchaches_scanned', JSON.stringify(s));
+}
+function deviceAlreadyScanned(qrId) {
+  return !!getDeviceScanned()[qrId];
+}
+
+// ═══════════════════════════════════════════
+//  QR ROUTE
+// ═══════════════════════════════════════════
+async function checkQRRoute() {
+  const params = new URLSearchParams(window.location.search);
+  const qrId = params.get('qr');
+  if (!qrId) return;
+
+  // Always read fresh state from DB
+  S.qrs = (await dbGet(K.qrs)) ?? [];
+  const qr = S.qrs.find(q => q.id === qrId);
+
+  if (!qr) {
+    alert('🤔 Este QR no existe o ya fue borrado.');
+    window.history.replaceState({}, '', ' ');
+    return;
+  }
+
+  const deviceId = getDeviceId();
+
+  // ── Already scanned by this device (even if QR was reset) ──
+  if (deviceAlreadyScanned(qrId)) {
+    showFoundPage(qr.num, 'device', qr.foundBy);
+    return;
+  }
+
+  // ── Already scanned by this account ──
+  if (session && !session.isAdmin) {
+    const alreadyInAccount = session.found_qrs.some(q => q.id === qrId);
+    if (alreadyInAccount) {
+      showFoundPage(qr.num, 'account', qr.foundBy);
+      return;
+    }
+  }
+
+  // ── QR globally used (first-come-first-serve for non-logged users) ──
+  if (qr.used) {
+    // Device didn't scan it, account didn't scan it, but globally used → show who found it
+    showFoundPage(qr.num, 'other', qr.foundBy);
+    return;
+  }
+
+  // ── Valid scan! Mark everything ──
+  const foundAt = new Date().toISOString();
+  qr.used = true;
+  qr.foundBy = session ? session.nickname : ('anon:' + deviceId.slice(0, 8));
+  qr.foundAt = foundAt;
+  // Keep a list of who scanned (device ids + user ids) to allow multi-guard
+  qr.scannedBy = qr.scannedBy || [];
+  qr.scannedBy.push(deviceId);
+  if (session && !session.isAdmin) qr.scannedBy.push(session.id);
+
+  S.counter = ((await dbGet(K.counter)) ?? 0) + 1;
+
+  const saves = [dbSet(K.qrs, S.qrs), dbSet(K.counter, S.counter)];
+
+  // Mark on this device so page-reload / bookmark can't re-trigger
+  markDeviceScanned(qrId);
+
+  if (session && !session.isAdmin) {
+    const prevUnlocked = getUnlocked(session, allUsers);
+    session.found_qrs.push({ id: qrId, num: qr.num, foundAt });
+    const uIdx = allUsers.findIndex(u => u.id === session.id);
+    if (uIdx !== -1) allUsers[uIdx].found_qrs = session.found_qrs;
+    saves.push(userUpdate(session.id, session.found_qrs));
+    await Promise.all(saves);
+    saveSession();
+    // Force a fresh reload of all users so the leaderboard/profile reflect this scan immediately
+    allUsers = await getAllUsers();
+    const newUnlocked = getUnlocked(session, allUsers);
+    const newOnes = newUnlocked.filter(id => !prevUnlocked.includes(id));
+    showFoundPage(qr.num, false, null, newOnes);
+  } else {
+    await Promise.all(saves);
+    showFoundPage(qr.num, false, null, []);
+  }
+}
+
+function showFoundPage(num, alreadyUsed, foundBy, newAchievements) {
+  document.getElementById('foundNum').textContent = '#' + num;
+  const finder = document.getElementById('foundFinder');
+  const cd = document.getElementById('foundCountdown');
+  document.getElementById('foundPage').classList.add('open');
+
+  if (alreadyUsed) {
+    // Different messages depending on why it's blocked
+    if (alreadyUsed === 'device') {
+      finder.textContent = '¡Ya lo escaneaste tú antes! 😄';
+      cd.textContent = '⚠️ Este dispositivo ya encontró este Mecchaches.';
+    } else if (alreadyUsed === 'account') {
+      finder.textContent = '¡Ya lo tienes en tu colección! 🎒';
+      cd.textContent = '⚠️ Tu cuenta ya tiene registrado este Mecchaches.';
+    } else {
+      // 'other' — found by someone else
+      finder.textContent = foundBy ? `Encontrado por ${foundBy} 🏃` : 'Ya encontrado por alguien 👀';
+      cd.textContent = '⚠️ ¡Este ya fue encontrado! Solo cuenta la primera vez.';
+    }
+    setTimeout(() => {
+      document.getElementById('foundPage').classList.remove('open');
+      window.history.replaceState({}, '', ' ');
+    }, 3500);
+    return;
+  }
+
+  finder.textContent = session && !session.isAdmin ? '¡Encontrado por ' + session.nickname + '! 🎊' : '';
+  let secs = 5;
+  const iv = setInterval(()=>{
+    secs--; cd.textContent=`Volviendo a casa en ${secs}s... 🏃`;
+    if(secs<=0){
+      clearInterval(iv);
+      document.getElementById('foundPage').classList.remove('open');
+      window.history.replaceState({},'',' ');
+      bounceCounter();
+      renderUI();
+      // Show achievement toasts sequentially
+      if (newAchievements && newAchievements.length) {
+        let delay = 300;
+        newAchievements.forEach(id => {
+          const a = ACHIEVEMENTS.find(x=>x.id===id);
+          if (a) setTimeout(()=>showAchToast(a), delay);
+          delay += 2500;
+        });
+      }
+    }
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════
+//  ACHIEVEMENT TOAST
+// ═══════════════════════════════════════════
+function showAchToast(a) {
+  document.getElementById('achToastIcon').textContent = a.icon;
+  document.getElementById('achToastName').textContent = '¡Logro desbloqueado: '+a.name+'!';
+  document.getElementById('achToastDesc').textContent = a.desc;
+  const toast = document.getElementById('achToast');
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 2200);
+}
+
+// ═══════════════════════════════════════════
+//  COUNTER
+// ═══════════════════════════════════════════
+async function resetCounter() {
+  if (!session?.isAdmin||!confirm('¿Resetear el contador a 0? 😬')) return;
+  S.counter=0; await dbSet(K.counter,0); bounceCounter();
+}
+async function adjustCounter(delta) {
+  if (!session?.isAdmin) return;
+  S.counter = Math.max(0, S.counter + delta);
+  await dbSet(K.counter, S.counter);
+  bounceCounter();
+  showStatus(delta > 0 ? '➕ Contador sumado' : '➖ Contador restado');
+}
+function bounceCounter() {
+  const el=document.getElementById('counterNum');
+  el.textContent=S.counter; el.classList.remove('bounce'); void el.offsetWidth; el.classList.add('bounce'); spawnConfetti();
+}
+function spawnConfetti() {
+  const emojis=['🎉','⭐','✨','🎊','🥳','💥','🎈','🌟'];
+  const card=document.querySelector('.counter-card');
+  for(let i=0;i<7;i++){const el=document.createElement('span');el.className='confetti-emoji';el.textContent=emojis[Math.floor(Math.random()*emojis.length)];el.style.left=Math.random()*80+10+'%';el.style.bottom='75%';el.style.animationDelay=Math.random()*0.3+'s';card.appendChild(el);setTimeout(()=>el.remove(),1300);}
+}
+
+// ═══════════════════════════════════════════
+//  QR
+// ═══════════════════════════════════════════
+async function generateQR() {
+  if (!session?.isAdmin) return;
+  const num=S.qrs.length+1;
+  const id='qr_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+  const url=window.location.href.split('?')[0]+'?qr='+id;
+  S.qrs.push({id,num,used:false,createdAt:new Date().toISOString(),url});
+  await dbSet(K.qrs,S.qrs); renderQRList();
+  document.getElementById('sidebar').classList.add('open');
+  showStatus('✅ QR #'+num+' creado');
+}
+async function resetQR(id){
+  if(!session?.isAdmin)return;
+  const qr=S.qrs.find(q=>q.id===id);
+  if(!qr)return;
+  qr.used=false;qr.foundBy=null;qr.foundAt=null;qr.scannedBy=[];
+  await dbSet(K.qrs,S.qrs);
+  // Also clear this QR from local device scan history
+  const s=getDeviceScanned(); delete s[id]; localStorage.setItem('mecchaches_scanned',JSON.stringify(s));
+  renderQRList();showStatus('🔄 QR #'+qr.num+' reseteado');
+}
+async function deleteQR(id){
+  if(!session?.isAdmin||!confirm('¿Borrar este QR?'))return;
+  S.qrs=S.qrs.filter(q=>q.id!==id);
+  await dbSet(K.qrs,S.qrs);
+  const s=getDeviceScanned(); delete s[id]; localStorage.setItem('mecchaches_scanned',JSON.stringify(s));
+  renderQRList();showStatus('🗑️ QR borrado');
+}
+async function resetAllQRs(){
+  if(!session?.isAdmin||!confirm('¿Resetear TODOS los QRs?\n\n⚠️ Esto también borrará el historial de escaneos de este dispositivo.'))return;
+  S.qrs.forEach(q=>{q.used=false;q.foundBy=null;q.foundAt=null;q.scannedBy=[];});
+  await dbSet(K.qrs,S.qrs);
+  localStorage.removeItem('mecchaches_scanned');
+  renderQRList();showStatus('🔄 Todos reseteados');
+}
+async function deleteAllQRs(){
+  if(!session?.isAdmin||!confirm('¿Borrar TODOS los QRs? 😬'))return;
+  S.qrs=[];await dbSet(K.qrs,[]);
+  localStorage.removeItem('mecchaches_scanned');
+  renderQRList();showStatus('🗑️ Todos borrados');
+}
+
+// Cache of high-res QR data URLs: { [qr.id]: dataURL }
+const qrCache = {};
+
+// Generate a high-res QR into an off-screen div, return its data URL, cache it
+function generateQRDataURL(url, size) {
+  return new Promise((resolve, reject) => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:'+size+'px;height:'+size+'px;';
+    document.body.appendChild(wrap);
+    try {
+      new QRCode(wrap, {
+        text: url, width: size, height: size,
+        colorDark: '#2D1B69', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+      // QRCode renders asynchronously via image, wait a tick
+      setTimeout(() => {
+        const canvas = wrap.querySelector('canvas');
+        const img    = wrap.querySelector('img');
+        if (canvas) {
+          resolve(canvas.toDataURL('image/png'));
+        } else if (img) {
+          resolve(img.src);
+        } else {
+          reject('no canvas or img');
+        }
+        document.body.removeChild(wrap);
+      }, 120);
+    } catch(e) {
+      document.body.removeChild(wrap);
+      reject(e);
+    }
+  });
+}
+
+function renderQRList(){
+  const list=document.getElementById('qrList'),stat=document.getElementById('qrStat');
+  const total=S.qrs.length,used=S.qrs.filter(q=>q.used).length;
+  stat.textContent=total?`${used} usados · ${total-used} libres · ${total} total`:'';
+  if(!total){list.innerHTML='<div class="empty-msg">Aún no hay QRs 😅</div>';return;}
+  list.innerHTML='';
+  [...S.qrs].reverse().forEach(qr=>{
+    const item=document.createElement('div');item.className='qr-item';
+    item.innerHTML=`
+      <div class="qr-canvas-wrap" id="qrcanvas_${qr.id}">
+        <div style="width:60px;height:60px;background:#eee;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">⏳</div>
+      </div>
+      <div class="qr-info">
+        <div class="qr-num">Nº${qr.num}</div>
+        <div class="qr-status">${qr.used?('✅ '+(qr.foundBy||'Escaneado')):'⏳ Pendiente'}</div>
+        <div class="qr-btns">
+          <button class="btn btn-dark btn-xs" id="dl_${qr.id}" onclick="downloadQR('${qr.id}',${qr.num})" disabled>⬇️</button>
+          <button class="btn btn-gray btn-xs" onclick="resetQR('${qr.id}')">🔄</button>
+          <button class="btn btn-danger btn-xs" onclick="deleteQR('${qr.id}')">🗑️</button>
+        </div>
+      </div>
+      <span class="badge ${qr.used?'badge-used':'badge-free'}">${qr.used?'USADO':'LIBRE'}</span>`;
+    list.appendChild(item);
+
+    // Build high-res QR (500px) and preview (60px) in parallel
+    const previewSize = 60, hiResSize = 500;
+    // Preview
+    const previewWrap = document.getElementById(`qrcanvas_${qr.id}`);
+    try {
+      new QRCode(previewWrap, {
+        text: qr.url, width: previewSize, height: previewSize,
+        colorDark: '#2D1B69', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+      // Remove placeholder once QR renders
+      setTimeout(() => {
+        const placeholder = previewWrap.querySelector('div');
+        if (placeholder) placeholder.remove();
+      }, 150);
+    } catch(e) {}
+
+    // Hi-res (cached)
+    if (qrCache[qr.id]) {
+      const btn = document.getElementById(`dl_${qr.id}`);
+      if (btn) btn.disabled = false;
+    } else {
+      generateQRDataURL(qr.url, hiResSize).then(dataURL => {
+        qrCache[qr.id] = dataURL;
+        const btn = document.getElementById(`dl_${qr.id}`);
+        if (btn) btn.disabled = false;
+      }).catch(() => {
+        const btn = document.getElementById(`dl_${qr.id}`);
+        if (btn) { btn.disabled = false; btn.title = 'Usar descarga alternativa'; }
+      });
+    }
+  });
+}
+
+function downloadQR(id, num) {
+  const dataURL = qrCache[id];
+  if (dataURL) {
+    const link = document.createElement('a');
+    link.download = `mecchaches_qr_${num}.png`;
+    link.href = dataURL;
+    link.click();
+  } else {
+    // Fallback: canvas from preview
+    const wrap = document.getElementById(`qrcanvas_${id}`);
+    const c = wrap ? wrap.querySelector('canvas') : null;
+    if (c) {
+      const link = document.createElement('a');
+      link.download = `mecchaches_qr_${num}.png`;
+      link.href = c.toDataURL('image/png');
+      link.click();
+    } else {
+      alert('El QR aún está cargando, espera un segundo e inténtalo de nuevo.');
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+//  BULLETIN
+// ═══════════════════════════════════════════
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+function toggleAddPost(){document.getElementById('addPostArea').classList.toggle('open');}
+async function addPost(){const text=document.getElementById('newPostText').value.trim();if(!text)return;S.posts.unshift({id:Date.now().toString(),text,date:new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'})});await dbSet(K.posts,S.posts);document.getElementById('newPostText').value='';document.getElementById('addPostArea').classList.remove('open');renderPosts();}
+async function deletePost(id){S.posts=S.posts.filter(p=>p.id!==id);await dbSet(K.posts,S.posts);renderPosts();}
+function renderPosts(){const c=document.getElementById('bulletinPosts');if(!S.posts.length){c.innerHTML='<div class="empty-msg">✉️ Sin anuncios todavía</div>';return;}c.innerHTML=S.posts.map(p=>`<div class="post"><button class="post-del ${session?.isAdmin?'show':''}" onclick="deletePost('${p.id}')">✕</button><p>${esc(p.text)}</p><div class="post-date">📅 ${p.date}</div></div>`).join('');}
+
+// ═══════════════════════════════════════════
+//  CANVA EDITOR
+// ═══════════════════════════════════════════
+const BG_SWATCHES = ['#F0EAFF','#FFF9ED','#E8F5E9','#E3F2FD','#FCE4EC','#FFF8E1','#1a1a2e','#0f3460','#16213e','#2D1B69','#1B4332','#3D0000'];
+const PRIMARY_SWATCHES = ['#FFD93D','#FF6B35','#95E06C','#C084FC','#38BDF8','#FB7185','#34D399','#FBBF24','#A78BFA','#F472B6','#fff','#222'];
+const ACCENT_SWATCHES  = ['#FF6B35','#FFD93D','#C084FC','#38BDF8','#95E06C','#FB7185','#F59E0B','#10B981','#6366F1','#EC4899','#fff','#222'];
+const COUNTER_COLOR_SWATCHES = ['#2D1B69','#1a1a2e','#0f3460','#1B4332','#3D0000','#fff','#FFD93D','#FF6B35','#C084FC','#38BDF8','#95E06C','#FB7185'];
+
+const GRADIENTS = [
+  'linear-gradient(135deg,#FFD93D,#FF6B35)','linear-gradient(135deg,#C084FC,#6366F1)','linear-gradient(135deg,#38BDF8,#6366F1)',
+  'linear-gradient(135deg,#95E06C,#38BDF8)','linear-gradient(135deg,#FB7185,#C084FC)','linear-gradient(135deg,#F59E0B,#EF4444)',
+  'linear-gradient(135deg,#2D1B69,#6366F1)','linear-gradient(135deg,#1B4332,#95E06C)','linear-gradient(135deg,#0f3460,#38BDF8)',
+  'linear-gradient(135deg,#FF6B35,#FFD93D,#C084FC)','linear-gradient(135deg,#6366F1,#EC4899,#F59E0B)','linear-gradient(135deg,#1a1a2e,#C084FC)',
+];
+
+const PATTERNS = [
+  { name:'Puntos', css:'radial-gradient(circle,#C084FC33 1px,transparent 1px)', size:'20px 20px' },
+  { name:'Rayas', css:'repeating-linear-gradient(45deg,#FFD93D22 0,#FFD93D22 1px,transparent 0,transparent 50%)', size:'10px 10px' },
+  { name:'Cuadrícula', css:'linear-gradient(#C084FC22 1px,transparent 1px),linear-gradient(90deg,#C084FC22 1px,transparent 1px)', size:'24px 24px' },
+  { name:'Diagonal', css:'repeating-linear-gradient(45deg,#FF6B3522 0,#FF6B3522 2px,transparent 0,transparent 14px)', size:'20px 20px' },
+  { name:'Confeti', css:'radial-gradient(circle at 20% 30%,#FFD93D44 4px,transparent 4px),radial-gradient(circle at 70% 60%,#C084FC44 4px,transparent 4px),radial-gradient(circle at 50% 80%,#95E06C44 4px,transparent 4px)', size:'40px 40px' },
+  { name:'Ondas', css:'repeating-radial-gradient(circle at 0 0,transparent 0,#FF6B3511 6px),repeating-linear-gradient(#FFD93D11,#FFD93D11)', size:'6px 6px' },
+];
+
+const FONTS = [
+  { name:'Fredoka One', label:'Fredoka One', style:"font-family:'Fredoka One',cursive" },
+  { name:'Nunito', label:'Nunito Bold', style:"font-family:'Nunito',sans-serif;font-weight:800" },
+  { name:'monospace', label:'Monospace', style:"font-family:'Courier New',monospace;font-weight:700" },
+  { name:'serif', label:'Serif', style:"font-family:Georgia,serif;font-weight:700" },
+  { name:'Impact', label:'Impact', style:"font-family:Impact,sans-serif" },
+  { name:'cursive', label:'Cursive', style:"font-family:'Comic Sans MS',cursive" },
+];
+
+const COUNTER_STYLES = [
+  { id:'default', preview:'42', label:'Clásico', card:'border:4px solid var(--primary);border-radius:30px;background:var(--card);' },
+  { id:'minimal', preview:'42', label:'Minimal', card:'border:none;border-radius:8px;background:var(--card);' },
+  { id:'dark',    preview:'42', label:'Oscuro',  card:'border:none;border-radius:24px;background:var(--dark);color:#fff;' },
+  { id:'gradient',preview:'42', label:'Gradiente',card:'border:none;border-radius:24px;background:linear-gradient(135deg,var(--primary),var(--orange));' },
+];
+
+// Editor working state (separate from S.config until saved)
+let ED = {};
+
+function openEditModal() {
+  // Clone current config into working state
+  ED = JSON.parse(JSON.stringify(S.config));
+  ED.primaryColor   = ED.primaryColor   || '#FFD93D';
+  ED.accentColor    = ED.accentColor    || '#FF6B35';
+  ED.counterColor   = ED.counterColor   || '#2D1B69';
+  ED.cardColor      = ED.cardColor      || '#ffffff';
+  ED.cardOpacity    = ED.cardOpacity    ?? 100;
+  ED.bgOpacity      = ED.bgOpacity      ?? 100;
+  ED.font           = ED.font           || 'Fredoka One';
+  ED.counterStyle   = ED.counterStyle   || 'default';
+  ED.cardRadius     = ED.cardRadius     ?? 30;
+  ED.borderWidth    = ED.borderWidth    ?? 4;
+  ED.shadow         = ED.shadow         || 'soft';
+  ED.counterSize    = ED.counterSize    ?? 9;
+  ED.counterLabel   = ED.counterLabel   || '';
+  ED.counterSub     = ED.counterSub     || '';
+  ED.volume         = ED.volume         ?? 80;
+  ED.autoplay       = ED.autoplay       ?? false;
+  ED.bgGradient     = ED.bgGradient     || '';
+  ED.bgPattern      = ED.bgPattern      || '';
+
+  buildEditorUI();
+  document.getElementById('editOverlay').classList.add('open');
+  switchEdSection('fondo');
+  livePreview();
+}
+
+function closeEditModal() { document.getElementById('editOverlay').classList.remove('open'); }
+
+function buildEditorUI() {
+  // Sync inputs
+  document.getElementById('editBgColor').value      = ED.bgColor      || '#F0EAFF';
+  document.getElementById('editBgImage').value      = ED.bgImage      || '';
+  document.getElementById('editBgOpacity').value    = ED.bgOpacity;
+  document.getElementById('bgOpacityVal').textContent = ED.bgOpacity + '%';
+  document.getElementById('editPrimaryColor').value = ED.primaryColor;
+  document.getElementById('editAccentColor').value  = ED.accentColor;
+  document.getElementById('editCounterColor').value = ED.counterColor;
+  document.getElementById('editCardColor').value    = ED.cardColor;
+  document.getElementById('editCardOpacity').value  = ED.cardOpacity;
+  document.getElementById('cardOpacityVal').textContent = ED.cardOpacity + '%';
+  document.getElementById('editCounterLabel').value = ED.counterLabel;
+  document.getElementById('editCounterSub').value   = ED.counterSub;
+  document.getElementById('editCounterSize').value  = ED.counterSize;
+  document.getElementById('counterSizeVal').textContent = ED.counterSize + 'rem';
+  document.getElementById('editCardRadius').value   = ED.cardRadius;
+  document.getElementById('cardRadiusVal').textContent = ED.cardRadius + 'px';
+  document.getElementById('editBorderWidth').value  = ED.borderWidth;
+  document.getElementById('borderWidthVal').textContent = ED.borderWidth + 'px';
+  document.getElementById('editMusicUrl').value     = ED.musicUrl      || '';
+  document.getElementById('editVolume').value       = ED.volume;
+  document.getElementById('volumeVal').textContent  = ED.volume + '%';
+  document.getElementById('editAutoplay').checked   = ED.autoplay;
+
+  // Swatch grids
+  buildSwatches('bgSwatches', BG_SWATCHES, ED.bgColor, v => { ED.bgColor=v; ED.bgGradient=''; ED.bgPattern=''; document.getElementById('editBgColor').value=v; livePreview(); });
+  buildSwatches('primarySwatches', PRIMARY_SWATCHES, ED.primaryColor, v => { ED.primaryColor=v; document.getElementById('editPrimaryColor').value=v; livePreview(); });
+  buildSwatches('accentSwatches', ACCENT_SWATCHES, ED.accentColor, v => { ED.accentColor=v; document.getElementById('editAccentColor').value=v; livePreview(); });
+  buildSwatches('counterColorSwatches', COUNTER_COLOR_SWATCHES, ED.counterColor, v => { ED.counterColor=v; document.getElementById('editCounterColor').value=v; livePreview(); });
+
+  // Gradients
+  const gg = document.getElementById('gradGrid');
+  gg.innerHTML = GRADIENTS.map((g,i) => `<div class="grad-swatch ${ED.bgGradient===g?'selected':''}" style="background:${g}" onclick="pickGradient(${i})" title="Gradiente ${i+1}"></div>`).join('');
+
+  // Patterns
+  const pg = document.getElementById('patternGrid');
+  pg.innerHTML = PATTERNS.map((p,i) => `<div class="pattern-swatch ${ED.bgPattern===p.css?'selected':''}" style="background-image:${p.css};background-size:${p.size};background-color:#F0EAFF;" onclick="pickPattern(${i})" title="${p.name}"></div>`).join('');
+
+  // Fonts
+  const fg = document.getElementById('fontGrid');
+  fg.innerHTML = FONTS.map(f => `<div class="font-card ${ED.font===f.name?'selected':''}" style="${f.style}" onclick="pickFont('${f.name}')">Abc 123</div>`).join('');
+
+  // Counter styles
+  const csg = document.getElementById('counterStyleGrid');
+  csg.innerHTML = COUNTER_STYLES.map(cs => `<div class="cstyle-card ${ED.counterStyle===cs.id?'selected':''}" onclick="pickCounterStyle('${cs.id}')"><div class="preview" style="${cs.card}padding:6px;display:inline-block;border-radius:8px;">${cs.preview}</div><span>${cs.label}</span></div>`).join('');
+
+  // Image thumbnails
+  renderImgThumbs();
+  updateMusicStatus();
+}
+
+function buildSwatches(containerId, colors, selected, onPick) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = colors.map(col => `<div class="swatch ${selected===col?'selected':''}" style="background:${col};${col==='#fff'?'border:2px solid #eee;':''}" onclick="(${onPick.toString()})('${col}')"></div>`).join('');
+}
+
+function switchEdSection(name) {
+  document.querySelectorAll('.esec-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.epanel').forEach(p => p.classList.remove('active'));
+  document.getElementById('esec-'+name).classList.add('active');
+  document.getElementById('epanel-'+name).classList.add('active');
+}
+
+function onBgColorPick(v) { ED.bgColor=v; ED.bgGradient=''; ED.bgPattern=''; buildSwatches('bgSwatches',BG_SWATCHES,v,c=>{ED.bgColor=c;ED.bgGradient='';ED.bgPattern='';document.getElementById('editBgColor').value=c;livePreview();}); livePreview(); }
+function onBgOpacity(v) { ED.bgOpacity=+v; document.getElementById('bgOpacityVal').textContent=v+'%'; livePreview(); }
+function onCardOpacity(v) { ED.cardOpacity=+v; document.getElementById('cardOpacityVal').textContent=v+'%'; livePreview(); }
+function onCounterSize(v) { ED.counterSize=+v; document.getElementById('counterSizeVal').textContent=v+'rem'; livePreview(); }
+function onCardRadius(v) { ED.cardRadius=+v; document.getElementById('cardRadiusVal').textContent=v+'px'; livePreview(); }
+function onBorderWidth(v) { ED.borderWidth=+v; document.getElementById('borderWidthVal').textContent=v+'px'; livePreview(); }
+function onVolume(v) { ED.volume=+v; document.getElementById('volumeVal').textContent=v+'%'; const m=document.getElementById('bgMusic'); m.volume=v/100; }
+function setShadow(s) { ED.shadow=s; livePreview(); }
+function pickGradient(i) {
+  ED.bgGradient=GRADIENTS[i]; ED.bgPattern='';
+  document.querySelectorAll('.grad-swatch').forEach((el,j)=>el.classList.toggle('selected',j===i));
+  livePreview();
+}
+function pickPattern(i) {
+  ED.bgPattern=PATTERNS[i].css; ED.bgGradient='';
+  document.querySelectorAll('.pattern-swatch').forEach((el,j)=>el.classList.toggle('selected',j===i));
+  livePreview();
+}
+function pickFont(name) {
+  ED.font=name;
+  document.querySelectorAll('.font-card').forEach(el=>el.classList.toggle('selected',el.textContent.trim()==='Abc 123'&&el.onclick&&el.getAttribute('onclick')&&el.getAttribute('onclick').includes("'"+name+"'")));
+  buildEditorUI(); livePreview();
+}
+function pickCounterStyle(id) {
+  ED.counterStyle=id;
+  document.querySelectorAll('.cstyle-card').forEach(el=>el.classList.toggle('selected',el.getAttribute('onclick')===`pickCounterStyle('${id}')`));
+  livePreview();
+}
+function updateMusicStatus() {
+  ED.musicUrl = document.getElementById('editMusicUrl').value;
+  const dot = document.getElementById('musicDot'), txt = document.getElementById('musicStatusText');
+  if (ED.musicUrl) { dot.classList.add('on'); txt.textContent=ED.musicUrl.split('/').pop().slice(0,40); }
+  else { dot.classList.remove('on'); txt.textContent='Sin música configurada'; }
+}
+function testMusic() {
+  ED.musicUrl = document.getElementById('editMusicUrl').value;
+  if (!ED.musicUrl) { alert('Primero escribe la URL de la música'); return; }
+  const m=document.getElementById('bgMusic'); m.src=ED.musicUrl; m.volume=ED.volume/100; m.play().catch(e=>alert('No se pudo reproducir: '+e.message));
+}
+function stopMusic() { document.getElementById('bgMusic').pause(); }
+function clearMusic() { document.getElementById('editMusicUrl').value=''; ED.musicUrl=''; updateMusicStatus(); }
+
+function renderImgThumbs() {
+  const g = document.getElementById('imgThumbGrid');
+  if (!ED.images||!ED.images.length) { g.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:0.78rem;grid-column:1/-1;">Sin imágenes todavía</div>'; return; }
+  g.innerHTML = ED.images.map((src,i) => `<div class="img-thumb"><img src="${src}"><button class="img-thumb-del" onclick="removeImg(${i})">✕</button></div>`).join('');
+}
+
+function removeImg(i) { ED.images.splice(i,1); renderImgThumbs(); livePreview(); }
+function onImageUpload(input) {
+  if (!input.files.length) return;
+  const reader=new FileReader();
+  reader.onload=e=>{ ED.images=ED.images||[]; ED.images.push(e.target.result); renderImgThumbs(); livePreview(); };
+  reader.readAsDataURL(input.files[0]);
+  input.value='';
+}
+async function clearImages() { if(!confirm('¿Borrar todas las imágenes?'))return; ED.images=[]; S.config.images=[]; await dbSet(K.config,S.config); renderImgThumbs(); renderImages(); showStatus('🗑️ Imágenes borradas'); }
+
+// ── Live preview ──
+function livePreview() {
+  // Read live inputs
+  ED.bgColor      = document.getElementById('editBgColor').value;
+  ED.bgImage      = document.getElementById('editBgImage').value;
+  ED.primaryColor = document.getElementById('editPrimaryColor').value;
+  ED.accentColor  = document.getElementById('editAccentColor').value;
+  ED.counterColor = document.getElementById('editCounterColor').value;
+  ED.cardColor    = document.getElementById('editCardColor').value;
+  ED.counterLabel = document.getElementById('editCounterLabel').value;
+  ED.counterSub   = document.getElementById('editCounterSub').value;
+  ED.musicUrl     = document.getElementById('editMusicUrl').value;
+
+  const frame = document.getElementById('previewFrame');
+  // Background
+  let bg = '';
+  if (ED.bgPattern) { bg=`background-color:${ED.bgColor};background-image:${ED.bgPattern};background-size:20px 20px;`; }
+  else if (ED.bgGradient) { bg=`background:${ED.bgGradient};`; }
+  else if (ED.bgImage) { bg=`background-image:url(${ED.bgImage});background-size:cover;background-position:center;`; }
+  else { bg=`background-color:${ED.bgColor};`; }
+  frame.style.cssText = bg;
+  frame.style.opacity = ED.bgOpacity/100;
+
+  // Counter card
+  const cs = COUNTER_STYLES.find(c=>c.id===ED.counterStyle)||COUNTER_STYLES[0];
+  const cardOpacityHex = Math.round(ED.cardOpacity/100*255).toString(16).padStart(2,'0');
+  const cardBg = ED.cardColor + cardOpacityHex;
+  let shadow='none';
+  if(ED.shadow==='soft') shadow='0 4px 20px rgba(0,0,0,0.10)';
+  if(ED.shadow==='hard') shadow='4px 4px 0 rgba(0,0,0,0.3)';
+  if(ED.shadow==='color') shadow=`0 6px 20px ${ED.primaryColor}66`;
+  const fontStyle = FONTS.find(f=>f.name===ED.font)?.style||"font-family:'Fredoka One',cursive";
+
+  const pc = document.getElementById('prevCounterCard');
+  pc.style.cssText = `border:${ED.borderWidth}px solid ${ED.primaryColor};border-radius:${ED.cardRadius}px;background:${cardBg};box-shadow:${shadow};`;
+  document.getElementById('prevLbl').style.cssText = `color:${ED.accentColor};font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;`;
+  document.getElementById('prevLbl').textContent = ED.counterLabel || '🏆 MECCHACHES ENCONTRADOS';
+  const pn = document.getElementById('prevNum');
+  pn.style.cssText = `${fontStyle};font-size:${ED.counterSize*0.35}rem;color:${ED.counterColor};line-height:1;`;
+  document.getElementById('prevSub').textContent = ED.counterSub || '¡A ver quién encuentra el siguiente! 👀';
+  document.getElementById('prevSub').style.color = ED.counterColor+'99';
+
+  // Bulletin preview
+  const pb = document.getElementById('prevBulletin');
+  pb.style.cssText=`border-radius:${Math.max(8,ED.cardRadius-8)}px;padding:10px;background:${cardBg};border:2px solid ${ED.accentColor};box-shadow:${shadow};`;
+  document.getElementById('prevBullTitle').style.color=ED.accentColor;
+  document.querySelectorAll('.prev-post').forEach(el=>{el.style.background=ED.bgColor;el.style.borderLeft=`3px solid ${ED.primaryColor}`;el.style.color=ED.counterColor;});
+}
+
+// ── Apply & save ──
+async function applyEdit() {
+  // Collect final values
+  ED.bgColor      = document.getElementById('editBgColor').value;
+  ED.bgImage      = document.getElementById('editBgImage').value;
+  ED.primaryColor = document.getElementById('editPrimaryColor').value;
+  ED.accentColor  = document.getElementById('editAccentColor').value;
+  ED.counterColor = document.getElementById('editCounterColor').value;
+  ED.cardColor    = document.getElementById('editCardColor').value;
+  ED.musicUrl     = document.getElementById('editMusicUrl')?.value || '';
+  ED.ytId         = extractYTId(document.getElementById('editYTUrl')?.value || '') || '';
+  ED.counterLabel = document.getElementById('editCounterLabel').value;
+  ED.counterSub   = document.getElementById('editCounterSub').value;
+  ED.autoplay     = document.getElementById('editAutoplay').checked;
+
+  // Merge into S.config
+  Object.assign(S.config, ED);
+  await dbSet(K.config, S.config);
+
+  // Apply to real page
+  applyConfigToPage();
+  closeEditModal();
+  showStatus('✅ Diseño guardado');
+}
+
+function applyConfigToPage() {
+  const c = S.config;
+  // Background
+  let bgColor = c.bgColor||'#F0EAFF', bgImage = 'none';
+  if (c.bgPattern) { document.body.style.backgroundImage=c.bgPattern; document.body.style.backgroundColor=bgColor; document.body.style.backgroundSize='20px 20px'; }
+  else if (c.bgGradient) { document.body.style.background=c.bgGradient; }
+  else if (c.bgImage) { document.body.style.backgroundImage=`url(${c.bgImage})`; document.body.style.backgroundSize='cover'; document.body.style.backgroundColor=bgColor; }
+  else { document.body.style.background=bgColor; }
+  document.body.style.opacity=1;
+
+  // CSS vars
+  document.documentElement.style.setProperty('--primary', c.primaryColor||'#FFD93D');
+  document.documentElement.style.setProperty('--orange',  c.accentColor ||'#FF6B35');
+  document.documentElement.style.setProperty('--bg-color', bgColor);
+
+  // Counter card
+  const cc = document.querySelector('.counter-card');
+  if (cc) {
+    const cardOpacityHex = Math.round((c.cardOpacity??100)/100*255).toString(16).padStart(2,'0');
+    let shadow='none';
+    if(c.shadow==='soft') shadow='0 8px 40px rgba(45,27,105,0.12)';
+    if(c.shadow==='hard') shadow='6px 6px 0 rgba(0,0,0,0.25)';
+    if(c.shadow==='color') shadow=`0 8px 30px ${c.primaryColor||'#FFD93D'}66`;
+    cc.style.borderRadius = (c.cardRadius??30)+'px';
+    cc.style.borderWidth  = (c.borderWidth??4)+'px';
+    cc.style.borderColor  = c.primaryColor||'#FFD93D';
+    cc.style.background   = (c.cardColor||'#ffffff') + cardOpacityHex;
+    cc.style.boxShadow    = shadow;
+  }
+  // Counter number style
+  const cn = document.getElementById('counterNum');
+  if (cn) {
+    const font = FONTS.find(f=>f.name===c.font);
+    if (font) cn.style.cssText=font.style+`;color:${c.counterColor||'#2D1B69'};font-size:clamp(4rem,${c.counterSize||9}rem,12rem);line-height:1;`;
+    else cn.style.color = c.counterColor||'#2D1B69';
+  }
+  // Labels
+  const cl = document.querySelector('.counter-label');
+  if (cl && c.counterLabel) cl.textContent = c.counterLabel;
+  if (cl) cl.style.color = c.accentColor||'#FF6B35';
+  const cs2 = document.querySelector('.counter-sub');
+  if (cs2 && c.counterSub) cs2.textContent = c.counterSub;
+
+  // Music — only auto-start if configured and autoplay on
+  if (c.autoplay && !musicPlaying) {
+    if (c.ytId) {
+      if (ytReady) {
+        if (!ytPlayer || typeof ytPlayer.loadVideoById !== 'function') {
+          ytPlayer = new YT.Player('ytPlayer', {
+            height:'1', width:'1', videoId: c.ytId,
+            playerVars: { autoplay:1, loop:1, playlist:c.ytId, controls:0 },
+            events: {
+              onReady: e => { e.target.setVolume(c.volume??80); e.target.playVideo(); },
+              onStateChange: e => { if (e.data === YT.PlayerState.ENDED) e.target.playVideo(); }
+            }
+          });
+        } else {
+          ytPlayer.setVolume(c.volume??80);
+          ytPlayer.loadVideoById(c.ytId);
+        }
+        musicPlaying = true;
+        document.getElementById('audioFab').textContent = '🎵';
+      } else {
+        ytPendingPlay = true; // will fire when API loads
+      }
+    } else if (c.musicUrl) {
+      const music = document.getElementById('bgMusic');
+      if (music.getAttribute('data-src') !== c.musicUrl) {
+        music.src = c.musicUrl; music.setAttribute('data-src', c.musicUrl);
+      }
+      music.volume = (c.volume??80)/100;
+      music.play().catch(()=>{});
+      musicPlaying = true;
+      document.getElementById('audioFab').textContent = '🎵';
+    }
+  }
+
+  renderImages();
+}
+
+function previewBg(){} // kept for compatibility
+
+// ═══════════════════════════════════════════
+//  MUSIC  (YouTube IFrame API + MP3 fallback)
+// ═══════════════════════════════════════════
+let musicPlaying = false;
+let ytPlayer = null;
+let ytReady = false;
+let ytPendingPlay = false;
+let currentMusicTab = 'yt'; // 'yt' | 'mp3'
+
+function extractYTId(input) {
+  if (!input) return null;
+  input = input.trim();
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+  const short = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (short) return short[1];
+  const long = input.match(/(?:v=|embed\/|shorts\/)([a-zA-Z0-9_-]{11})/);
+  if (long) return long[1];
+  return null;
+}
+
+function switchMusicTab(tab) {
+  currentMusicTab = tab;
+  document.getElementById('musicYTPanel').style.display  = tab === 'yt'  ? '' : 'none';
+  document.getElementById('musicMP3Panel').style.display = tab === 'mp3' ? '' : 'none';
+  document.getElementById('mtabYT').classList.toggle('active', tab === 'yt');
+  document.getElementById('mtabMP3').classList.toggle('active', tab === 'mp3');
+  updateMusicStatus();
+}
+
+function getMusicSource() {
+  // Returns { type:'yt'|'mp3'|null, value: ytId|mp3url }
+  const ytRaw = (document.getElementById('editYTUrl')?.value || ED.ytId || '').trim();
+  const mp3   = (document.getElementById('editMusicUrl')?.value || ED.musicUrl || '').trim();
+  if (currentMusicTab === 'yt' && ytRaw) {
+    const id = extractYTId(ytRaw);
+    return id ? { type:'yt', value:id } : null;
+  }
+  if (currentMusicTab === 'mp3' && mp3) return { type:'mp3', value:mp3 };
+  // Auto-detect from saved config
+  if (ED.ytId) return { type:'yt', value:ED.ytId };
+  if (ED.musicUrl) return { type:'mp3', value:ED.musicUrl };
+  return null;
+}
+
+function updateMusicStatus() {
+  const src = getMusicSource();
+  const dot = document.getElementById('musicDot');
+  const txt = document.getElementById('musicStatusText');
+  if (!dot || !txt) return;
+  if (src?.type === 'yt') {
+    dot.classList.add('on'); txt.textContent = '▶️ YouTube: ' + src.value;
+  } else if (src?.type === 'mp3') {
+    dot.classList.add('on'); txt.textContent = '🎧 MP3: ' + src.value.split('/').pop().slice(0, 40);
+  } else {
+    dot.classList.remove('on'); txt.textContent = 'Sin música configurada';
+  }
+}
+
+function _ytPlay() {
+  const ytRaw = (document.getElementById('editYTUrl')?.value || S.config.ytId || '').trim();
+  const id = extractYTId(ytRaw) || S.config.ytId;
+  if (!id) return;
+  const vol = parseInt(document.getElementById('editVolume')?.value || S.config.volume || 80);
+  if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+    ytPlayer.setVolume(vol);
+    ytPlayer.loadVideoById(id);
+    ytPlayer.playVideo();
+  } else {
+    ytPlayer = new YT.Player('ytPlayer', {
+      height:'1', width:'1',
+      videoId: id,
+      playerVars: { autoplay:1, loop:1, playlist:id, controls:0, modestbranding:1 },
+      events: {
+        onReady: e => { e.target.setVolume(vol); e.target.playVideo(); },
+        onStateChange: e => {
+          if (e.data === YT.PlayerState.ENDED) e.target.playVideo();
+        }
+      }
+    });
+  }
+}
+
+function testMusic() {
+  const src = getMusicSource();
+  if (!src) { alert('Escribe una URL de YouTube o MP3 primero'); return; }
+  if (src.type === 'yt') {
+    stopMusic();
+    if (!ytReady) { ytPendingPlay = true; return; }
+    _ytPlay();
+    musicPlaying = true;
+    document.getElementById('audioFab').textContent = '🎵';
+  } else {
+    const m = document.getElementById('bgMusic');
+    m.src = src.value;
+    m.volume = (parseInt(document.getElementById('editVolume')?.value || 80)) / 100;
+    m.play().catch(e => alert('No se pudo reproducir: ' + e.message));
+    musicPlaying = true;
+    document.getElementById('audioFab').textContent = '🎵';
+  }
+}
+
+function stopMusic() {
+  // Stop YouTube
+  if (ytPlayer && typeof ytPlayer.stopVideo === 'function') ytPlayer.stopVideo();
+  // Stop mp3
+  const m = document.getElementById('bgMusic');
+  m.pause(); m.currentTime = 0;
+  musicPlaying = false;
+  document.getElementById('audioFab').textContent = '🔇';
+}
+
+function clearMusic() {
+  stopMusic();
+  const yi = document.getElementById('editYTUrl');  if (yi) yi.value = '';
+  const mi = document.getElementById('editMusicUrl'); if (mi) mi.value = '';
+  ED.ytId = ''; ED.musicUrl = '';
+  updateMusicStatus();
+}
+
+function toggleMusic() {
+  const fab = document.getElementById('audioFab');
+  const cfg = S.config;
+  if (musicPlaying) {
+    stopMusic(); return;
+  }
+  // Try YouTube first
+  if (cfg.ytId) {
+    if (!ytReady) { ytPendingPlay = true; showStatus('⏳ Cargando YouTube...'); return; }
+    const vol = (cfg.volume ?? 80);
+    if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+      ytPlayer.setVolume(vol);
+      ytPlayer.loadVideoById(cfg.ytId);
+      ytPlayer.playVideo();
+    } else {
+      ytPlayer = new YT.Player('ytPlayer', {
+        height:'1', width:'1',
+        videoId: cfg.ytId,
+        playerVars: { autoplay:1, loop:1, playlist:cfg.ytId, controls:0, modestbranding:1 },
+        events: {
+          onReady: e => { e.target.setVolume(vol); e.target.playVideo(); },
+          onStateChange: e => { if (e.data === YT.PlayerState.ENDED) e.target.playVideo(); }
+        }
+      });
+    }
+    musicPlaying = true; fab.textContent = '🎵';
+    return;
+  }
+  // Fallback mp3
+  if (cfg.musicUrl) {
+    const m = document.getElementById('bgMusic');
+    if (m.getAttribute('data-src') !== cfg.musicUrl) { m.src = cfg.musicUrl; m.setAttribute('data-src', cfg.musicUrl); }
+    m.volume = (cfg.volume ?? 80) / 100;
+    m.play().catch(() => alert('El navegador bloqueó la música. Pulsa primero en cualquier parte de la página.'));
+    musicPlaying = true; fab.textContent = '🎵';
+    return;
+  }
+  alert('El creador aún no ha añadido música 🎵');
+}
+
+// ═══════════════════════════════════════════
+//  QR SCANNER
+// ═══════════════════════════════════════════
+let scannerStream = null;
+let scannerTimer  = null;
+let scannerActive = false;
+let barcodeDetector = null;
+
+async function openScanner() {
+  document.getElementById('scannerOverlay').classList.add('open');
+  document.getElementById('scannerResult').style.display = 'none';
+  document.getElementById('scannerError').style.display  = 'none';
+  document.getElementById('scannerStatus').textContent   = 'Iniciando cámara...';
+  scannerActive = true;
+
+  // Init BarcodeDetector or load jsQR fallback
+  if ('BarcodeDetector' in window) {
+    barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+  } else {
+    await loadJsQR();
+  }
+
+  // Enumerate cameras and prefer back camera
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const cams = devices.filter(d => d.kind === 'videoinput');
+    const sel = document.getElementById('scannerCamSelect');
+    if (cams.length > 1) {
+      sel.style.display = '';
+      sel.innerHTML = cams.map((c,i) => `<option value="${c.deviceId}">${c.label || 'Cámara '+(i+1)}</option>`).join('');
+      // Prefer back camera
+      const backIdx = cams.findIndex(c => /back|rear|environment/i.test(c.label));
+      if (backIdx >= 0) sel.selectedIndex = backIdx;
+    }
+    await startCamera(cams.length > 1 ? cams[sel.selectedIndex]?.deviceId : null);
+  } catch(e) {
+    showScannerError('No se pudo acceder a la cámara: ' + e.message);
+  }
+}
+
+async function loadJsQR() {
+  if (window.jsQR) return;
+  await new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+    s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+async function startCamera(deviceId) {
+  if (scannerStream) { scannerStream.getTracks().forEach(t => t.stop()); }
+  const constraints = {
+    video: deviceId
+      ? { deviceId: { exact: deviceId }, facingMode: 'environment' }
+      : { facingMode: { ideal: 'environment' } }
+  };
+  try {
+    scannerStream = await navigator.mediaDevices.getUserMedia(constraints);
+    const video = document.getElementById('scannerVideo');
+    video.srcObject = scannerStream;
+    await video.play();
+    document.getElementById('scannerStatus').textContent = 'Apunta la cámara al código QR 🎯';
+    startScanLoop();
+  } catch(e) {
+    showScannerError('Error de cámara: ' + e.message);
+  }
+}
+
+async function switchCamera(deviceId) {
+  clearInterval(scannerTimer);
+  await startCamera(deviceId);
+}
+
+function startScanLoop() {
+  const video = document.getElementById('scannerVideo');
+  clearInterval(scannerTimer);
+  scannerTimer = setInterval(async () => {
+    if (!scannerActive || video.readyState < 2) return;
+    try {
+      let result = null;
+      if (barcodeDetector) {
+        const codes = await barcodeDetector.detect(video);
+        if (codes.length) result = codes[0].rawValue;
+      } else if (window.jsQR) {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        const img = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(img.data, img.width, img.height);
+        if (code) result = code.data;
+      }
+      if (result) onQRDetected(result);
+    } catch(e) {}
+  }, 300);
+}
+
+function onQRDetected(url) {
+  if (!scannerActive) return;
+  clearInterval(scannerTimer);
+  scannerActive = false;
+
+  const res = document.getElementById('scannerResult');
+  res.textContent = '✅ ¡QR detectado! Procesando...';
+  res.style.display = 'block';
+  document.getElementById('scannerLine').style.animationPlayState = 'paused';
+
+  // Check if it's a Mecchaches QR
+  let qrId = null;
+  try {
+    const u = new URL(url);
+    qrId = u.searchParams.get('qr');
+  } catch(e) { qrId = null; }
+
+  if (!qrId) {
+    // Not a Mecchaches QR — open URL if it's a valid link
+    setTimeout(() => {
+      closeScanner();
+      if (url.startsWith('http')) {
+        if (confirm('QR externo detectado:\n'+url+'\n\n¿Abrir enlace?')) window.open(url, '_blank');
+      } else {
+        showStatus('QR: ' + url.slice(0, 60));
+      }
+    }, 800);
+    return;
+  }
+
+  // It's a Mecchaches QR — process inline without page reload
+  setTimeout(async () => {
+    closeScanner();
+    // Push ?qr=ID to the URL so checkQRRoute runs
+    const newUrl = window.location.pathname + '?qr=' + qrId;
+    window.history.pushState({}, '', newUrl);
+    await checkQRRoute();
+    // Clean URL after processing
+    window.history.replaceState({}, '', window.location.pathname);
+  }, 600);
+}
+
+function showScannerError(msg) {
+  const el = document.getElementById('scannerError');
+  el.textContent = '❌ ' + msg;
+  el.style.display = 'block';
+  document.getElementById('scannerStatus').textContent = '';
+}
+
+function closeScanner() {
+  scannerActive = false;
+  clearInterval(scannerTimer);
+  if (scannerStream) { scannerStream.getTracks().forEach(t => t.stop()); scannerStream = null; }
+  const video = document.getElementById('scannerVideo');
+  video.srcObject = null;
+  document.getElementById('scannerOverlay').classList.remove('open');
+  document.getElementById('scannerLine').style.animationPlayState = 'running';
+  document.getElementById('scannerCamSelect').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════
+//  STATUS
+// ═══════════════════════════════════════════
+let statusTimer;
+function showStatus(msg){const b=document.getElementById('statusBar');b.textContent=msg;b.style.display='block';clearTimeout(statusTimer);statusTimer=setTimeout(()=>b.style.display='none',2500);}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ═══════════════════════════════════════════
+//  RENDER IMAGES (decorative)
+// ═══════════════════════════════════════════
+function renderImages(){
+  const s=document.getElementById('imagesSection'),g=document.getElementById('imagesGrid');
+  if(!S.config.images||!S.config.images.length){s.style.display='none';return;}
+  s.style.display='block';
+  g.innerHTML=S.config.images.map(src=>`<img class="custom-img" src="${src}" alt="">`).join('');
+}
+
+// ═══════════════════════════════════════════
+//  POLL
+// ═══════════════════════════════════════════
+async function poll(){
+  try{
+    const [counter,qrs,posts,config,users]=await Promise.all([dbGet(K.counter),dbGet(K.qrs),dbGet(K.posts),dbGet(K.config),getAllUsers()]);
+    const newC=counter??0;const didBounce=newC>S.counter;
+    S.counter=newC;S.qrs=qrs??[];S.posts=posts??[];S.config=config??S.config;allUsers=users;
+    if(didBounce)bounceCounter();else document.getElementById('counterNum').textContent=S.counter;
+    renderPosts();if(session?.isAdmin)renderQRList();
+    applyConfigToPage();
+    if(currentPage==='ranking')renderLeaderboard();
+  }catch(e){}
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+(async()=>{
+  try{ await loadAll(); }catch(e){ showStatus('⚠️ Error conectando con la base de datos'); }
+  // Restore session BEFORE processing QR so found_qrs gets registered
+  await restoreSession();
+  document.getElementById('loadingOverlay').style.display='none';
+  renderUI();
+  await checkQRRoute();
+  setInterval(poll,10000);
+})();
+</script>
+<!-- YouTube IFrame API (loaded async, must be after main script) -->
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+// This callback is called automatically by the YouTube API when it's ready.
+// Variables (ytPlayer, ytReady, ytPendingPlay, musicPlaying, currentMusicTab)
+// are already declared in the main script above and are global.
+function onYouTubeIframeAPIReady() {
+  ytReady = true;
+  if (ytPendingPlay) {
+    ytPendingPlay = false;
+    toggleMusic();
+  }
+}
+</script>
+</body>
+</html>
